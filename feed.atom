@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Mark Karpov's Blog</title>
+    <link href="https://mrkkrp.github.com/feed.atom" rel="self" />
+    <link href="https://mrkkrp.github.com" />
+    <id>https://mrkkrp.github.com/feed.atom</id>
+    <author>
+        <name>Mark Karpov</name>
+        <email>markkarpov@opmbx.org</email>
+    </author>
+    <updated>2015-10-23T00:00:00Z</updated>
+    <entry>
+    <title>Lisp and Haskell</title>
+    <link href="https://mrkkrp.github.com/posts/lisp-and-haskell.html" />
+    <id>https://mrkkrp.github.com/posts/lisp-and-haskell.html</id>
+    <published>2015-10-23T00:00:00Z</published>
+    <updated>2015-10-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[How I finally decided what is better (for me), Lisp or Haskell?]]></summary>
+</entry>
+
+</feed>
