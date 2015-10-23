@@ -1,0 +1,19 @@
+name:                 mrkkrp-blog
+version:              0.1.0.0
+synopsis:             Mark Karpov's personal blog
+description:          Mark Karpov's personal blog
+homepage:             https://mrkkrp.github.io/
+license-file:         LICENSE.txt
+author:               Mark Karpov et al
+category:             web
+build-type:           Simple
+extra-source-files:   README.md
+cabal-version:        >= 1.22
+
+executable site
+  main-is:            Main.hs
+  hs-source-dirs:     src
+  ghc-options:        -threaded -Wall
+  build-depends:      base   >= 4.8
+                    , hakyll == 4.7.*
+  default-language:   Haskell2010

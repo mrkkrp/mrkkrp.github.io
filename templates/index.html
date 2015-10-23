@@ -1,0 +1,10 @@
+<ul>
+  $for(posts)$
+  <li>
+    <a href="$url$">$title$</a>
+    $if(date)$
+    <em>published on $date$</em>
+    $endif$
+  </li>
+  $endfor$
+</ul>
