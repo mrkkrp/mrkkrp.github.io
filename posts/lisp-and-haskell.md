@@ -292,7 +292,7 @@ which is not quite the same.
 
 I think it's *quite* difficult to have entire Lisp statically typed, from
 the very basic things like cons cells, it's all dynamic. One thing is clear,
-Lisp with strong and powerful static typing system can be quite different
+Lisp with strong and powerful static typing system can be very different
 from what our familiar Lisps are.
 
 ## Hackish vs “protective” languages
@@ -318,9 +318,9 @@ didn't know at all).
 
 Now I appreciate “protective” languages, maybe because I know that I'll
 definitely make mistakes and I want something to catch them before it's too
-late. Haskell has definitely changed me as programmer. Now I think there is
-something good (apart from strings that know their length) in Pascal, at
-least I don't hate it anymore.
+late. Haskell has changed me as programmer. Now I think there is something
+good (apart from strings that know their length) in Pascal, at least I don't
+hate it anymore.
 
 ## Fix for that code snippet
 
