@@ -8,12 +8,10 @@
 # - build
 #
 
-SITE=$(shell find ./.stack-work/dist/ -name site -type f)
-
 .PHONY : get-index
 
 watch : build
-	$(SITE) watch
+	stack exec site watch
 
 deploy : build # may be brittle
 	cd ../mrkkrp-blog-master/ ; rm -vfr \
@@ -23,5 +21,5 @@ deploy : build # may be brittle
 	git push origin master
 
 build :
-	$(SITE) clean
-	$(SITE) build
+	stack exec site clean
+	stack exec site build
