@@ -1,4 +1,3 @@
--- -*- Mode: Haskell; -*-
 --
 -- Mark Karpov's personal blog.
 --
