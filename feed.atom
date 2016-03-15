@@ -8,8 +8,16 @@
         <name>Mark Karpov</name>
         <email>markkarpov@opmbx.org</email>
     </author>
-    <updated>2016-02-23T00:00:00Z</updated>
+    <updated>2016-03-15T00:00:00Z</updated>
     <entry>
+    <title>The true power of Dvorak</title>
+    <link href="https://mrkkrp.github.com/posts/dvorak-rocks.html" />
+    <id>https://mrkkrp.github.com/posts/dvorak-rocks.html</id>
+    <published>2016-03-15T00:00:00Z</published>
+    <updated>2016-03-15T00:00:00Z</updated>
+    <summary type="html"><![CDATA[My experience with the Dvorak layout]]></summary>
+</entry>
+<entry>
     <title>Megaparsec 4 and 5</title>
     <link href="https://mrkkrp.github.com/posts/megaparsec-4-and-5.html" />
     <id>https://mrkkrp.github.com/posts/megaparsec-4-and-5.html</id>
