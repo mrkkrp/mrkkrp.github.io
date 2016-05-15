@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <meta name="author" content="Mark Karpov" />
+    
+    
+    <title>
+      Announcing Megaparsec 5
+      
+      by Mark Karpov
+      
+    </title>
+    
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+  </head>
+
+  <body>
+    <a name="top"></a>
+    <nav>
+      <a href="../index.html">
+        index
+      </a>
+      &middot;
+      <a href="https://github.com/mrkkrp/mrkkrp.github.io/tree/src">
+        src
+      </a>
+      &middot;
+      <a href="../feed.atom">
+        feed
+      </a>
+      &middot;
+      <a href="https://creativecommons.org/licenses/by/4.0/">
+        license
+      </a>
+      &middot;
+      <a href="../contact.html">
+        etc
+      </a>
+    </nav>
+
+    <div class="content">
+      
+      <h1>
+        Announcing Megaparsec 5
+        
+      </h1>
+      
+      
+<p>
+  by Mark Karpov
+</p>
+
+
+
+<em>
+  Published on May 15, 2016
+</em>
+
+
+<p>I’m happy to announce new major release of Megaparsec.</p>
+<ul>
+<li><a href="https://hackage.haskell.org/package/megaparsec">Megaparsec 5 on Hackage</a></li>
+<li><a href="https://github.com/mrkkrp/megaparsec">GitHub repo</a></li>
+<li><a href="https://mrkkrp.github.io/megaparsec/">Site</a></li>
+<li><a href="https://github.com/mrkkrp/megaparsec/blob/master/CHANGELOG.md">Changelog</a></li>
+</ul>
+<h2 id="thanks">Thanks</h2>
+<p>It’s hard not to see that Megaparsec is moving away from its granddaddy Parsec in every new release. In version five we re-thought some design decisions made in Parsec and the result is a library written in more flexible and modern Haskell.</p>
+<p>Megaparsec development is completely issue-driven. Actual users and their practical problems have been shaping the library for quite some time now and so I would like to thank people who opened most important issues and feature-requests that made me think again about design of the library:</p>
+<ul>
+<li><p><a href="https://github.com/chamini2">Matteo Ferrando</a>, an active user who noticed problem with non-flexible position-advancing mechanism.</p></li>
+<li><p><a href="https://github.com/hvr">Herbert Valerio Riedel</a> who proposed to add support for include files and move position-advancing functions into <code>Stream</code> type class.</p></li>
+<li><p><a href="https://github.com/wdanilo">Wojciech Daniło</a> who opened issue about well-typed and customizable error messages and actively participated in discussion.</p></li>
+<li><p><a href="https://github.com/expipiplus1">Joe Hermaszewski</a> who proposed deriving of <code>Read</code> and <code>Show</code> instances and using special functions for pretty-printing.</p></li>
+<li><p>And others who proposed and in some cases implemented various minor changes.</p></li>
+</ul>
+<h2 id="well-typed-and-customizable-error-messages">Well-typed and customizable error messages</h2>
+<p>Perhaps the most important feature in this release is well-typed and customizable error messages. <code>ParseError</code> is now parametrized over token type <code>t</code> and custom error component <code>e</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">ParseError</span> t e <span class="fu">=</span> <span class="dt">ParseError</span>
+  {<span class="ot"> errorPos        ::</span> <span class="dt">NonEmpty</span> <span class="dt">SourcePos</span> <span class="co">-- ^ Stack of source positions</span>
+  ,<span class="ot"> errorUnexpected ::</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> t)  <span class="co">-- ^ Unexpected items</span>
+  ,<span class="ot"> errorExpected   ::</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> t)  <span class="co">-- ^ Expected items</span>
+  ,<span class="ot"> errorCustom     ::</span> <span class="dt">Set</span> e              <span class="co">-- ^ Associated data, if any</span>
+  } <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Read</span>, <span class="dt">Eq</span>, <span class="dt">Typeable</span>)</code></pre></div>
+<p><code>ErrorItem</code> is parametrized over token type <code>t</code> and looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">ErrorItem</span> t
+  <span class="fu">=</span> <span class="dt">Tokens</span> (<span class="dt">NonEmpty</span> t)      <span class="co">-- ^ Non-empty stream of tokens</span>
+  <span class="fu">|</span> <span class="dt">Label</span> (<span class="dt">NonEmpty</span> <span class="dt">Char</span>)    <span class="co">-- ^ Label (cannot be empty)</span>
+  <span class="fu">|</span> <span class="dt">EndOfInput</span>               <span class="co">-- ^ End of input</span>
+  <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Read</span>, <span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Data</span>, <span class="dt">Typeable</span>)</code></pre></div>
+<p>Now error in Megaparsec is not just a bunch of strings, but something more comprehensible. I expect some people may not like the intensive use of <code>NonEmpty</code>, but I tried to use types that are inhabited only by logically valid values.</p>
+<p>As you can see parse errors support <em>stack</em> of source positions. This has corresonding helpers in <code>Text.Megaparsec.Prim</code> and can be used to work with include files. Pretty-printing function <code>parseErrorPretty</code> also knows how to display stacks of source positions and there are <code>pushPosition</code> and <code>popPosition</code> functions available as well.</p>
+<p>What about <code>errorCustom</code>? You can use your own type there and the whole library will work with that just fine. We have <code>Dec</code> out-of-box:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Dec</span>
+  <span class="fu">=</span> <span class="dt">DecFail</span> <span class="dt">String</span>         <span class="co">-- ^ 'fail' has been used in parser monad</span>
+  <span class="fu">|</span> <span class="dt">DecIndentation</span> <span class="dt">Ordering</span> <span class="dt">Pos</span> <span class="dt">Pos</span> <span class="co">-- ^ Incorrect indentation error</span>
+  <span class="kw">deriving</span> (<span class="dt">Show</span>, <span class="dt">Read</span>, <span class="dt">Eq</span>, <span class="dt">Ord</span>, <span class="dt">Data</span>, <span class="dt">Typeable</span>)</code></pre></div>
+<p><code>Dec</code> stands for “default error component” and unless you’re doing something advanced it should just work. To use your own type you just need to make it instance of <code>ErrorComponent</code> and <code>ShowErrorComponent</code> (only needed if you want to pretty-print error messages):</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Ord</span> e <span class="ot">=&gt;</span> <span class="dt">ErrorComponent</span> e <span class="kw">where</span>
+
+  <span class="co">-- | Represent message passed to 'fail' in parser monad.</span>
+  <span class="fu">--</span>
+  <span class="co">-- @since 5.0.0</span>
+
+<span class="ot">  representFail ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> e
+
+  <span class="co">-- | Represent information about incorrect indentation.</span>
+  <span class="fu">--</span>
+  <span class="co">-- @since 5.0.0</span>
+
+  representIndentation
+<span class="ot">    ::</span> <span class="dt">Ordering</span> <span class="co">-- ^ Desired ordering between reference level and actual level</span>
+    <span class="ot">-&gt;</span> <span class="dt">Pos</span>             <span class="co">-- ^ Reference indentation level</span>
+    <span class="ot">-&gt;</span> <span class="dt">Pos</span>             <span class="co">-- ^ Actual indentation level</span>
+    <span class="ot">-&gt;</span> e
+
+<span class="kw">class</span> <span class="dt">Ord</span> a <span class="ot">=&gt;</span> <span class="dt">ShowErrorComponent</span> a <span class="kw">where</span>
+
+  <span class="co">-- | Pretty-print custom data component of 'ParseError'.</span>
+
+<span class="ot">  showErrorComponent ::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span></code></pre></div>
+<p>Then you build on top of <code>failure</code> primitive to report error messages with your data:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">failure ::</span> <span class="dt">MonadParsec</span> e s m
+  <span class="ot">=&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ Unexpected items</span>
+  <span class="ot">-&gt;</span> <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s)) <span class="co">-- ^ Expected items</span>
+  <span class="ot">-&gt;</span> <span class="dt">Set</span> e                     <span class="co">-- ^ Custom data</span>
+  <span class="ot">-&gt;</span> m a</code></pre></div>
+<p>For example, indentation-sensitive helpers from <code>Text.Megaparsec.Lexer</code> make use of this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">incorrectIndent ::</span> <span class="dt">MonadParsec</span> e s m
+  <span class="ot">=&gt;</span> <span class="dt">Ordering</span>  <span class="co">-- ^ Desired ordering between reference level and actual level</span>
+  <span class="ot">-&gt;</span> <span class="dt">Pos</span>               <span class="co">-- ^ Reference indentation level</span>
+  <span class="ot">-&gt;</span> <span class="dt">Pos</span>               <span class="co">-- ^ Actual indentation level</span>
+  <span class="ot">-&gt;</span> m a
+incorrectIndent ord ref actual <span class="fu">=</span> failure E.empty E.empty (E.singleton x)
+  <span class="kw">where</span> x <span class="fu">=</span> representIndentation ord ref actual</code></pre></div>
+<p>Which produces error messages like this (taken from <a href="https://mrkkrp.github.io/megaparsec/tutorials/indentation-sensitive-parsing.html">this tutorial</a>):</p>
+<pre><code>λ&gt; parseTest parser &quot;something\n  one\n    two\n  three&quot;
+3:5:
+incorrect indentation (got 5, should be equal to 3)
+λ&gt; parseTest parser &quot;something\n  one\n  two\n three&quot;
+4:2:
+incorrect indentation (got 2, should be equal to 3)
+λ&gt; parseTest parser &quot;something\n  one\n  two\n  three&quot;
+(&quot;something&quot;,[&quot;one&quot;,&quot;two&quot;,&quot;three&quot;])</code></pre>
+<p>Much better than simply “incorrect indentation”!</p>
+<h2 id="the-stream-type-class">The <code>Stream</code> type class</h2>
+<p>The <code>Stream</code> type class now has associated type function <code>Token</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Ord</span> (<span class="dt">Token</span> s) <span class="ot">=&gt;</span> <span class="dt">Stream</span> s <span class="kw">where</span>
+
+  <span class="co">-- | Type of token in stream.</span>
+  <span class="fu">--</span>
+  <span class="co">-- @since 5.0.0</span>
+
+  <span class="kw">type</span> <span class="dt">Token</span><span class="ot"> s ::</span> <span class="fu">*</span>
+
+  …</code></pre></div>
+<p>This is a very handy thing, it allowed to remove one type parameter from <code>MonadParsec</code> type class and write natural type constraints like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">newline ::</span> (<span class="dt">MonadParsec</span> e s m, <span class="dt">Token</span> s <span class="fu">~</span> <span class="dt">Char</span>) <span class="ot">=&gt;</span> m <span class="dt">Char</span>
+newline <span class="fu">=</span> char <span class="ch">'\n'</span></code></pre></div>
+<p>We will talk about this more in the next section.</p>
+<p>Another addition to <code>Stream</code> type class is <code>updatePos</code> method. Its signature looks like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">updatePos
+<span class="ot">  ::</span> <span class="dt">Proxy</span> s <span class="co">-- ^ Proxy clarifying stream type ('Token' is not injective)</span>
+  <span class="ot">-&gt;</span> <span class="dt">Pos</span>             <span class="co">-- ^ Tab width</span>
+  <span class="ot">-&gt;</span> <span class="dt">SourcePos</span>       <span class="co">-- ^ Current position</span>
+  <span class="ot">-&gt;</span> <span class="dt">Token</span> s         <span class="co">-- ^ Current token</span>
+  <span class="ot">-&gt;</span> (<span class="dt">SourcePos</span>, <span class="dt">SourcePos</span>) <span class="co">-- ^ Actual position and incremented position</span></code></pre></div>
+<p>This improved support for streams of tokens where information about position of token is encoded in token itself, should be useful with Alex/Happy.</p>
+<h2 id="the-monadparsec-type-class">The <code>MonadParsec</code> type class</h2>
+<p>Declaration of <code>MonadParsec</code> changed:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="dt">ErrorComponent</span> e, <span class="dt">Stream</span> s, <span class="dt">Alternative</span> m, <span class="dt">MonadPlus</span> m)
+    <span class="ot">=&gt;</span> <span class="dt">MonadParsec</span> e s m <span class="fu">|</span> m <span class="ot">-&gt;</span> e s <span class="kw">where</span></code></pre></div>
+<p>We added type of custom error component <code>e</code> and removed type of token <code>t</code> because now it can be found from type of stream <code>s</code> via type function <code>Token</code>. This gives us signatures like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">token ::</span> <span class="dt">MonadParsec</span> e s m
+  <span class="ot">=&gt;</span> (<span class="dt">Token</span> s <span class="ot">-&gt;</span> <span class="dt">Either</span> ( <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s))
+                        , <span class="dt">Set</span> (<span class="dt">ErrorItem</span> (<span class="dt">Token</span> s))
+                        , <span class="dt">Set</span> e ) a)
+     <span class="co">-- ^ Matching function for the token to parse, it allows to construct</span>
+     <span class="co">-- arbitrary error message on failure as well; sets in three-tuple</span>
+     <span class="co">-- are: unexpected items, expected items, and custom data pieces</span>
+  <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">Token</span> s) <span class="co">-- ^ Token to report when input stream is empty</span>
+  <span class="ot">-&gt;</span> m a
+
+<span class="ot">tokens ::</span> <span class="dt">MonadParsec</span> e s m
+  <span class="ot">=&gt;</span> (<span class="dt">Token</span> s <span class="ot">-&gt;</span> <span class="dt">Token</span> s <span class="ot">-&gt;</span> <span class="dt">Bool</span>)
+     <span class="co">-- ^ Predicate to check equality of tokens</span>
+  <span class="ot">-&gt;</span> [<span class="dt">Token</span> s]
+     <span class="co">-- ^ List of tokens to parse</span>
+  <span class="ot">-&gt;</span> m [<span class="dt">Token</span> s]</code></pre></div>
+<h2 id="support-for-line-folds">Support for line folds</h2>
+<p>Finally support for line folds is here. It’s not difficult to implement though:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | Create a parser that supports line-folding. The first argument is used</span>
+<span class="co">-- to consume white space between components of line fold, thus it /must/</span>
+<span class="co">-- consume newlines in order to work properly. The second argument is a</span>
+<span class="co">-- callback that receives custom space-consuming parser as argument. This</span>
+<span class="co">-- parser should be used after separate components of line fold that can be</span>
+<span class="co">-- put on different lines.</span>
+<span class="fu">--</span>
+<span class="co">-- An example should clarify the usage pattern:</span>
+<span class="fu">--</span>
+<span class="co">-- &gt; sc = L.space (void spaceChar) empty empty</span>
+<span class="co">-- &gt;</span>
+<span class="co">-- &gt; myFold = L.lineFold sc $ \sc' -&gt; do</span>
+<span class="co">-- &gt;   L.symbol sc' &quot;foo&quot;</span>
+<span class="co">-- &gt;   L.symbol sc' &quot;bar&quot;</span>
+<span class="co">-- &gt;   L.symbol sc  &quot;baz&quot; -- for the last symbol we use normal space consumer</span>
+<span class="fu">--</span>
+<span class="co">-- @since 5.0.0</span>
+
+<span class="ot">lineFold ::</span> <span class="dt">MonadParsec</span> e s m
+  <span class="ot">=&gt;</span> m ()              <span class="co">-- ^ How to consume indentation (white space)</span>
+  <span class="ot">-&gt;</span> (m () <span class="ot">-&gt;</span> m a)     <span class="co">-- ^ Callback that uses provided space-consumer</span>
+  <span class="ot">-&gt;</span> m a
+lineFold sc action <span class="fu">=</span>
+  sc <span class="fu">&gt;&gt;</span> indentLevel <span class="fu">&gt;&gt;=</span> action <span class="fu">.</span> void <span class="fu">.</span> indentGuard sc <span class="dt">GT</span></code></pre></div>
+<p>It’s super simple and it works.</p>
+<h2 id="using-of-scientific">Using of <code>scientific</code></h2>
+<p>Like Attoparsec, we switched to the <a href="https://hackage.haskell.org/package/scientific"><code>scientific</code></a> package for parsing of floating point values in <code>Text.Megaparsec.Lexer</code>. The <code>Scientific</code> type is safe against numbers with huge exponents and it can reliably represent integers too (it even has functions <code>isFloating</code>, <code>isInteger</code>, and others that allow handy dispatching), so now we can write <code>number</code> as:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="co">-- | Parse a number: either integer or floating point. The parser can handle</span>
+<span class="co">-- overlapping grammars graciously. Use functions like</span>
+<span class="co">-- 'Data.Scientific.floatingOrInteger' from &quot;Data.Scientific&quot; to test and</span>
+<span class="co">-- extract integer or real values.</span>
+
+<span class="ot">number ::</span> (<span class="dt">MonadParsec</span> e s m, <span class="dt">Token</span> s <span class="fu">~</span> <span class="dt">Char</span>) <span class="ot">=&gt;</span> m <span class="dt">Scientific</span></code></pre></div>
+<p>This is amazing, because you can get either floating point number or integer from it later and <code>signed</code> does not need ah-hoc <code>Signed</code> type class anymore to compose with other functions from the module (previously <code>number</code> returned <code>Either Integer Double</code>):</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">signed ::</span> (<span class="dt">MonadParsec</span> e s m, <span class="dt">Token</span> s <span class="fu">~</span> <span class="dt">Char</span>, <span class="dt">Num</span> a) <span class="ot">=&gt;</span> m () <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m a</code></pre></div>
+<h2 id="performance">Performance</h2>
+<p>All these new features started to make Megaparsec slower. To counteract this I had to do some profiling and benchmarking (thanks again to <a href="https://github.com/abooij">Auke Booij</a> who contributed benchmarks for Megaparsec on early stages of development) and indeed some inlining, manual re-write of <code>(&lt;*&gt;)</code>, and careful use of strictness allowed me to improve the situation. Here are simplified results of comparison on my laptop:</p>
+<table style="width:89%;">
+<colgroup>
+<col width="47%" />
+<col width="18%" />
+<col width="22%" />
+</colgroup>
+<tbody>
+<tr class="odd">
+<td align="left"><p>Benchmark (size 1000)</p></td>
+<td align="left"><p>Parsec 3.1.9</p></td>
+<td align="left"><p>Megaparsec 5.0.0</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>string/match</code></p></td>
+<td align="left"><p>74.59 μs</p></td>
+<td align="left"><p>48.65 μs</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>string/nomatch_early</code></p></td>
+<td align="left"><p>374.0 ns</p></td>
+<td align="left"><p>59.06 ns</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>string/nomatch_late</code></p></td>
+<td align="left"><p>69.80 μs</p></td>
+<td align="left"><p>31.51 μs</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>try-string/match</code></p></td>
+<td align="left"><p>76.60 μs</p></td>
+<td align="left"><p>48.15 μs</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>try-string/nomatch_early</code></p></td>
+<td align="left"><p>383.5 ns</p></td>
+<td align="left"><p>61.93 ns</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>try-string/nomatch_late</code></p></td>
+<td align="left"><p>70.88 μs</p></td>
+<td align="left"><p>31.72 μs</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>lookahead-string/match</code></p></td>
+<td align="left"><p>76.78 μs</p></td>
+<td align="left"><p>47.07 μs</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>lookahead-string/nomatch_early</code></p></td>
+<td align="left"><p>389.5 ns</p></td>
+<td align="left"><p>60.13 ns</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>lookahead-string/nomatch_late</code></p></td>
+<td align="left"><p>77.80 μs</p></td>
+<td align="left"><p>29.73 μs</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>notfollowedby-string/match</code></p></td>
+<td align="left"><p>79.46 μs</p></td>
+<td align="left"><p>48.54 μs</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>notfollowedby-string/nomatch_early</code></p></td>
+<td align="left"><p>418.8 ns</p></td>
+<td align="left"><p>47.17 ns</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>notfollowedby-string/nomatch_late</code></p></td>
+<td align="left"><p>79.46 μs</p></td>
+<td align="left"><p>30.56 μs</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>manual-string</code></p></td>
+<td align="left"><p>328.8 μs</p></td>
+<td align="left"><p>57.15 μs</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>choice/match</code></p></td>
+<td align="left"><p>355.5 μs</p></td>
+<td align="left"><p>232.6 μs</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>choice/nomatch</code></p></td>
+<td align="left"><p>523.8 μs</p></td>
+<td align="left"><p>289.2 μs</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>count</code></p></td>
+<td align="left"><p>260.8 μs</p></td>
+<td align="left"><p>48.85 μs</p></td>
+</tr>
+<tr class="even">
+<td align="left"><p><code>sepBy1</code></p></td>
+<td align="left"><p>357.8 μs</p></td>
+<td align="left"><p>100.6 μs</p></td>
+</tr>
+<tr class="odd">
+<td align="left"><p><code>manyTill</code></p></td>
+<td align="left"><p>464.7 μs</p></td>
+<td align="left"><p>139.7 μs</p></td>
+</tr>
+</tbody>
+</table>
+<p><code>tokens</code> (that influences performance of <code>string</code>) is coded differently than in Parsec because I wanted to have a bit different error messages that show not just current mismatched token, but all sequence parsed up to first mismatch and all sequence that is expected. <code>tokens</code> also backtracks automatically in Megaparsec 4.3+ but this has no impact on performance. <code>choice</code> is not considerably faster because in Megaparsec it does a lot more than in Parsec since we need to be able to get parser state on errors for some features to work.</p>
+<p>All in all, given flexibility and features of our fork, the results are not shameful. To be honest, Parsec can be made faster than Megaparsec with some effort, but that effort has yet to be applied. I would also appreciate if someone could add Megaparsec into other parsing benchamarks and let me know about results.</p>
+<h2 id="to-be-continued">To be continued</h2>
+<p>These are the most important but not all changes and improvements in Megaparsec 5, please see the <a href="https://github.com/mrkkrp/megaparsec/blob/master/CHANGELOG.md">change log</a> for complete list. I will continue to maintain and improve the library actively, but do not expect radical changes to happen anytime soon. Now I would like to concentrate on fixing bugs (should they be discovered) in timely manner and answering questions. This is partly because I think Megaparsec 5 already covers pretty much everything I planned for this project and because I want to spend more time on my other personal pursuits that have little to do with programming. Your pull requests are still most welcome though!</p>
+
+    </div>
+    <footer>
+      <a href="#top">top</a>
+    </footer>
+
+  </body>
+</html>
