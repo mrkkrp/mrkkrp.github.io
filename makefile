@@ -17,7 +17,7 @@ watch : build
 
 deploy : build master
 	cd mrkkrp-blog-master/ ; rm -vfr \
-	css/ posts/ index.html feed.atom contact.html
+	css/ js/ img/ posts/ index.html feed.atom contact.html
 	cp -vr _site/* mrkkrp-blog-master/
 	cd mrkkrp-blog-master/ ; git add -A ; git commit -m 'auto-sync' ; \
 	git push origin master
