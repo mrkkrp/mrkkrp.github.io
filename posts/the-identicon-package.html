@@ -61,7 +61,7 @@
 </em>
 
 
-<p>I need to generate identicons for one of my projects so I wrote a package for this, of course it’s in Haskell. In this blog post I’m gonig to show you how it works and what it produces.</p>
+<p>I need to generate identicons for one of my projects so I wrote a package for this in Haskell. In this blog post I’m gonig to show you how it works and what it produces.</p>
 <h2 id="the-problem">The problem</h2>
 <p>I would like to have a flexible enough package that allows to generate identicons of greatly varying “texture”. It should be a library that provides not a rigid function that produces identicons, but some sort of framework that can be used in many projects with visually different results, while possibly introducing some characteristic flavor into resulting images. I want it to be flexible, so I could easy code different aspects/parts of identicon, swap code of these parts, freely compose graphical primitives. I want it to be quite fast. I want to make sure that components of identicon coexist with each other in a clearly defined way and I want to use Haskell’s type system for this (what I really mean by that will be clear soon).</p>
 <p>I’ve written a package that achieves all these goals. It’s fairly small piece of code, but I found it so fun to use so I decided I would share what it can do in my blog.</p>
@@ -235,6 +235,19 @@ edge x <span class="fu">=</span> x <span class="fu">*</span> x</code></pre></div
       hvsym <span class="fu">$</span> gradientTLBR id (<span class="dt">PixelRGB8</span> r0 g0 b0) (<span class="dt">PixelRGB8</span> r1 g1 b1)</code></pre></div>
 <p><img src="../img/identicon-07.png" alt="With rotation, one" /> <img src="../img/identicon-08.png" alt="With rotation, two" /> <img src="../img/identicon-09.png" alt="With rotation, three" /></p>
 <p>But hey, we have saved one byte (last argument of <code>a2</code>)! We can feed it into <code>oneof</code> combinator to make things a bit more varying.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a0 <span class="fu">:+</span> a1 <span class="fu">:+</span> a2 <span class="fu">:+</span> a3
+    a0 r g b n <span class="fu">=</span> rsym <span class="fu">$</span> onGrid <span class="dv">3</span> <span class="dv">3</span> n <span class="fu">$</span>
+      circle <span class="fu">$</span> gradientTLBR mid black (<span class="dt">PixelRGB8</span> r g b)
+    a1 r g b n <span class="fu">=</span> rsym <span class="fu">$</span>
+      onGrid <span class="dv">8</span> <span class="dv">1</span> n <span class="fu">$</span> gradientTRBL mid (<span class="dt">PixelRGB8</span> r g b) black
+    a2 r g b n <span class="fu">=</span> oneof [ gradientXY (edge <span class="fu">.</span> mid)
+                       , gradientLR mid
+                       , gradientTB mid
+                       ] n black (<span class="dt">PixelRGB8</span> r g b)
+    a3 r0 g0 b0 r1 g1 b1 <span class="fu">=</span>
+      hvsym <span class="fu">$</span> gradientTLBR id (<span class="dt">PixelRGB8</span> r0 g0 b0) (<span class="dt">PixelRGB8</span> r1 g1 b1)</code></pre></div>
 <p><img src="../img/identicon-10.png" alt="Varying center, one" /> <img src="../img/identicon-11.png" alt="Varying center, two" /> <img src="../img/identicon-12.png" alt="Varying center, three" /></p>
 <h2 id="conclusion">Conclusion</h2>
 <p>Of course this is just a preview and the icons shown here are not the most interesting ones you can get. As always, everything is limited only by your imagination. Given such general definition of <code>Layer</code>, you can do whatever you want, even insert some existing pictures into identicons and manipulate them. I find performance satisfactory too, especially if you need small identicons, not 420 × 420 ones as shown here.</p>
