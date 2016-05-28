@@ -8,8 +8,16 @@
         <name>Mark Karpov</name>
         <email>markkarpov@opmbx.org</email>
     </author>
-    <updated>2016-05-15T00:00:00Z</updated>
+    <updated>2016-05-28T00:00:00Z</updated>
     <entry>
+    <title>The Identicon package</title>
+    <link href="https://mrkkrp.github.com/posts/the-identicon-package.html" />
+    <id>https://mrkkrp.github.com/posts/the-identicon-package.html</id>
+    <published>2016-05-28T00:00:00Z</published>
+    <updated>2016-05-28T00:00:00Z</updated>
+    <summary type="html"><![CDATA[My new Identicon package for identicon generation]]></summary>
+</entry>
+<entry>
     <title>Announcing Megaparsec 5</title>
     <link href="https://mrkkrp.github.com/posts/announcing-megaparsec-5.html" />
     <id>https://mrkkrp.github.com/posts/announcing-megaparsec-5.html</id>

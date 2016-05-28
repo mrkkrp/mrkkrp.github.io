@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <meta name="author" content="Mark Karpov" />
+    
+    
+    <title>
+      The Identicon package
+      
+      by Mark Karpov
+      
+    </title>
+    
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+  </head>
+
+  <body>
+    <a name="top"></a>
+    <nav>
+      <a href="../index.html">
+        index
+      </a>
+      &middot;
+      <a href="https://github.com/mrkkrp/mrkkrp.github.io/tree/src">
+        src
+      </a>
+      &middot;
+      <a href="../feed.atom">
+        feed
+      </a>
+      &middot;
+      <a href="https://creativecommons.org/licenses/by/4.0/">
+        license
+      </a>
+      &middot;
+      <a href="../contact.html">
+        etc
+      </a>
+    </nav>
+
+    <div class="content">
+      
+      <h1>
+        The Identicon package
+        
+      </h1>
+      
+      
+<p class="credit">
+  by Mark Karpov
+</p>
+
+
+
+<em>
+  Published on May 28, 2016
+</em>
+
+
+<p>I need to generate identicons for one of my projects so I wrote a package for this, of course it’s in Haskell. In this blog post I’m gonig to show you how it works and what it produces.</p>
+<h2 id="the-problem">The problem</h2>
+<p>I would like to have a flexible enough package that allows to generate identicons of greatly varying “texture”. It should be a library that provides not a rigid function that produces identicons, but some sort of framework that can be used in many projects with visually different results, while possibly introducing some characteristic flavor into resulting images. I want it to be flexible, so I could easy code different aspects/parts of identicon, swap code of these parts, freely compose graphical primitives. I want it to be quite fast. I want to make sure that components of identicon coexist with each other in a clearly defined way and I want to use Haskell’s type system for this (what I really mean by that will be clear soon).</p>
+<p>I’ve written a package that achieves all these goals. It’s fairly small piece of code, but I found it so fun to use so I decided I would share what it can do in my blog.</p>
+<h2 id="basics">Basics</h2>
+<p>The basic concept in the package is distribution of bytes between primitives. Bytes come from a <code>ByteString</code> and parametrize code that generates actual graphics. Every such piece of code that takes bytes and returns some graphics is called <em>consumer</em>. Every consumer produces a <em>layer</em> in the end and it’s just an image. All layers are computed independently and then mixed to produce the final result.</p>
+<p>First we should state how many bytes do we have total. This is done on type level:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Icon</span> <span class="fu">=</span> <span class="dt">Identicon</span> <span class="dv">12</span></code></pre></div>
+<p>Here we have zero consumers (and thus zero layers), and 12 bytes. We cannot use this type with the library because all “available” bytes must be consumed. To consume the bytes we attach consumers to the identicon with help of the <code>:+</code> type operator:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Icon</span> <span class="fu">=</span> <span class="dt">Identicon</span> <span class="dv">12</span> <span class="fu">:+</span> <span class="dt">Consumer</span> <span class="dv">4</span> <span class="fu">:+</span> <span class="dt">Consumer</span> <span class="dv">4</span> <span class="fu">:+</span> <span class="dt">Consumer</span> <span class="dv">4</span></code></pre></div>
+<p>Now, this will type check: we’ve got 12 bytes and consume them all. Every consumer as I said produces a layer, so we have three different layers here.</p>
+<p>Now we need to actually write how to generate every layer, but before we start playing with graphics, I need to show how do we actually get an image.</p>
+<p>Here is how:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">genIcon
+<span class="ot">  ::</span> <span class="dt">Int</span>               <span class="co">-- ^ Desired width</span>
+  <span class="ot">-&gt;</span> <span class="dt">Int</span>               <span class="co">-- ^ Desired height</span>
+  <span class="ot">-&gt;</span> <span class="dt">ByteString</span>        <span class="co">-- ^ Input (some sort of hash)</span>
+  <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (<span class="dt">Image</span> <span class="dt">PixelRGB8</span>) <span class="co">-- ^ Resulting image</span>
+genIcon <span class="fu">=</span> renderIdenticon (<span class="dt">Proxy</span><span class="ot"> ::</span> <span class="dt">Proxy</span> <span class="dt">Icon</span>) i
+  <span class="kw">where</span>
+<span class="ot">    i ::</span> <span class="dt">Implementation</span> <span class="dt">Icon</span>
+    i <span class="fu">=</span> undefined <span class="co">-- TODO</span></code></pre></div>
+<p><code>renderIdenticon</code> is provided by the library and it’s the most important function that actually produces images. It’s a good idea to wrap it like this to get a very straightforward image factory. As you can see we’re using the wonderful <a href="https://hackage.haskell.org/package/JuicyPixels"><code>JuicyPixels</code></a> package to work with images. Currently <code>identicon</code> only produces <code>PixelRGB8</code> pixels for speed.</p>
+<p>If <code>ByteString</code> is too short we get <code>Nothing</code>. Fair enough, and since hashes typically have fixed size, it should not be a problem. Also, width and height must be greater than 0 or again you will get <code>Nothing</code>.</p>
+<p>Remaining part of the blog posts is about writing the <code>Implementation Icon</code> thing.</p>
+<h2 id="writing-layers">Writing layers</h2>
+<p><code>Implementation Icon</code> is always a bunch of functions that are kept together with help of <code>(:+)</code> data constructor (this one works on term level). Every function gets its bytes as discrete <code>Word8</code> arguments and produces a <code>Layer</code>.</p>
+<p>In practice it means that <code>i</code> has the following type:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="dt">Implementation</span> <span class="dt">Icon</span> ≡
+
+<span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Layer</span> <span class="fu">:+</span>
+<span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Layer</span> <span class="fu">:+</span>
+<span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Word8</span> <span class="ot">-&gt;</span> <span class="dt">Layer</span></code></pre></div>
+<p>Cool, but how do we make a <code>Layer</code>?</p>
+<h3 id="what-is-a-layer-anyway">What is a <code>layer</code> anyway?</h3>
+<p><code>Layer</code> is an image in form of function. If you’re familiar with Repa, it’s something like “delayed array”. <code>Layer</code> is just a newtype wrapper:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Layer</span> <span class="fu">=</span> <span class="dt">Layer</span>
+  {<span class="ot"> unLayer ::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">PixelRGB8</span> }</code></pre></div>
+<p>The function takes:</p>
+<ul>
+<li>width</li>
+<li>height</li>
+<li>X coordinate</li>
+<li>Y coordinate</li>
+</ul>
+<p>…and returns a <code>PixelRGB8</code>. Note how abstract a layer actually is. It’s like vector graphics, it doesn’t care about width and height, you can render it in any size. This actually means that once you have a <code>Layer</code>, you can write combinators that transform it in various ways and the whole thing is very composable as we will see shortly.</p>
+<h3 id="filling-with-solid-color">Filling with solid color</h3>
+<p>OK, we can transform existing <code>Layer</code>s, but how do we get one to start with? Simplest layer would be just an area filled with one solid color. He have it under <code>color</code> name:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">color ::</span> <span class="dt">PixelRGB8</span> <span class="ot">-&gt;</span> <span class="dt">Layer</span>
+color a <span class="fu">=</span> <span class="dt">Layer</span> <span class="fu">$</span> \_ _ _ _ <span class="ot">-&gt;</span> a</code></pre></div>
+<p>We also have <code>black</code> color:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">black ::</span> <span class="dt">PixelRGB8</span>
+black <span class="fu">=</span> <span class="dt">PixelRGB8</span> <span class="dv">0</span> <span class="dv">0</span> <span class="dv">0</span></code></pre></div>
+<p>When we mix layers we just sum pixel components (with saturation, naturally). So black color means rather absense of anything. We’ll use it in this role exclusively.</p>
+<p>Let’s use <code>color</code> to put together first working version of <code>i</code>:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a <span class="fu">:+</span> a <span class="fu">:+</span> a
+    a r g b _ <span class="fu">=</span> color (<span class="dt">PixelRGB8</span> r g b)</code></pre></div>
+<p>Example output:</p>
+<div class="figure">
+<img src="../img/identicon-00.png" alt="Our first identicon" />
+<p class="caption">Our first identicon</p>
+</div>
+<p>Three colors are mixed. For different inputs we get different colors. Already an identicon of a sort but well… can we make something more interesting?</p>
+<h3 id="filling-with-gradients">Filling with gradients</h3>
+<p>Apart from solid color option, there are various gradients:</p>
+<ul>
+<li><p><code>gradientLR</code> — color transition from left to right</p></li>
+<li><p><code>gradientTB</code> — color transition from top to bottom</p></li>
+<li><p><code>gradientTLBR</code> — color transition from top left corner to bottom right corner</p></li>
+<li><p><code>gradientTRBL</code> — the same, but with top right and bottom left corners</p></li>
+<li><p><code>gradientXY</code> — one color is on edges and another one in the middle</p></li>
+</ul>
+<p>We can try them, let’s “mute” all layers but one:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a <span class="fu">:+</span> a' <span class="fu">:+</span> a'
+    a r g b _ <span class="fu">=</span> gradientTLBR id black (<span class="dt">PixelRGB8</span> r g b)
+    a' _ _ _ _ <span class="fu">=</span> color black</code></pre></div>
+<div class="figure">
+<img src="../img/identicon-01.png" alt="Diagonal gradient" />
+<p class="caption">Diagonal gradient</p>
+</div>
+<p>Attentive reader will notice the <code>id</code> argument. This is a function that can control color transition. It gets an argument that varies from 0 to 1 and it should return something in the same range. When it returns 0, we get pure first color and the second color for 1.</p>
+<p>A couple of helpers are available out-of-box:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">mid ::</span> <span class="dt">Float</span> <span class="ot">-&gt;</span> <span class="dt">Float</span>
+mid x <span class="fu">=</span> <span class="dv">2</span> <span class="fu">*</span> (<span class="kw">if</span> x <span class="fu">&gt;=</span> <span class="fl">0.5</span> <span class="kw">then</span> <span class="fl">1.0</span> <span class="fu">-</span> x <span class="kw">else</span> x)
+
+<span class="ot">edge ::</span> <span class="dt">Float</span> <span class="ot">-&gt;</span> <span class="dt">Float</span>
+edge x <span class="fu">=</span> x <span class="fu">*</span> x</code></pre></div>
+<p>Replacing <code>id</code> with <code>edge . mid</code>:</p>
+<div class="figure">
+<img src="../img/identicon-02.png" alt="Modified gradient" />
+<p class="caption">Modified gradient</p>
+</div>
+<p>Ready for something more interesting?</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a0 <span class="fu">:+</span> a1 <span class="fu">:+</span> a2
+    a0 r g b _ <span class="fu">=</span> gradientTLBR edge black (<span class="dt">PixelRGB8</span> r g b)
+    a1 r g b _ <span class="fu">=</span> gradientTRBL edge (<span class="dt">PixelRGB8</span> r g b) black
+    a2 r g b _ <span class="fu">=</span> gradientXY (edge <span class="fu">.</span> mid) black (<span class="dt">PixelRGB8</span> r g b)</code></pre></div>
+<div class="figure">
+<img src="../img/identicon-03.png" alt="Gradients" />
+<p class="caption">Gradients</p>
+</div>
+<h3 id="shape-size-and-position">Shape, size, and position</h3>
+<p>OK, I can hear you are saying “in <em>real</em> identicons you have figures, not just some strange gradients occupying entire canvas”. Yes, that’s right. But if we have a layer with some color in it, it’s easy to have combinators that would re-size it and put in some specific place on canvas. We can even replace some part of existing layer with <code>black</code> and let the rest be visible. That’s how <code>circle :: Layer -&gt; Layer</code> combinator works:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a0 <span class="fu">:+</span> a1 <span class="fu">:+</span> a2
+    a0 r g b _ <span class="fu">=</span> circle <span class="fu">$</span> gradientTLBR edge black (<span class="dt">PixelRGB8</span> r g b)
+    a1 r g b _ <span class="fu">=</span> gradientTRBL edge (<span class="dt">PixelRGB8</span> r g b) black
+    a2 r g b _ <span class="fu">=</span> gradientXY (edge <span class="fu">.</span> mid) black (<span class="dt">PixelRGB8</span> r g b)</code></pre></div>
+<div class="figure">
+<img src="../img/identicon-04.png" alt="The circle combinator in action" />
+<p class="caption">The circle combinator in action</p>
+</div>
+<p>Position is controlled by the <code>onGrid</code> combinator:</p>
+<pre><code>onGrid :: Integral a
+  =&gt; Int               -- ^ Number of horizontal positions
+  -&gt; Int               -- ^ Number of vertical positions
+  -&gt; a                 -- ^ Index of this cell
+  -&gt; Layer             -- ^ Layer to insert
+  -&gt; Layer             -- ^ Resulting layer</code></pre>
+<p>Let’s spacially separate our layers:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a0 <span class="fu">:+</span> a1 <span class="fu">:+</span> a2
+    a0 r g b n <span class="fu">=</span> onGrid <span class="dv">3</span> <span class="dv">3</span> n <span class="fu">$</span> circle <span class="fu">$</span> gradientTLBR mid black (<span class="dt">PixelRGB8</span> r g b)
+    a1 r g b n <span class="fu">=</span> onGrid <span class="dv">8</span> <span class="dv">1</span> n <span class="fu">$</span> gradientTRBL mid (<span class="dt">PixelRGB8</span> r g b) black
+    a2 r g b _ <span class="fu">=</span> gradientXY (edge <span class="fu">.</span> mid) black (<span class="dt">PixelRGB8</span> r g b)</code></pre></div>
+<div class="figure">
+<img src="../img/identicon-05.png" alt="Three figures" />
+<p class="caption">Three figures</p>
+</div>
+<p>Black background doesn’t look good, let’s add a background with two-color gradient:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Icon</span> <span class="fu">=</span> <span class="dt">Identicon</span> <span class="dv">18</span> <span class="fu">:+</span> <span class="dt">Consumer</span> <span class="dv">4</span> <span class="fu">:+</span> <span class="dt">Consumer</span> <span class="dv">4</span> <span class="fu">:+</span> <span class="dt">Consumer</span> <span class="dv">4</span> <span class="fu">:+</span> <span class="dt">Consumer</span> <span class="dv">6</span>
+
+…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a0 <span class="fu">:+</span> a1 <span class="fu">:+</span> a2 <span class="fu">:+</span> a3
+    a0 r g b n <span class="fu">=</span> onGrid <span class="dv">3</span> <span class="dv">3</span> n <span class="fu">$</span> circle <span class="fu">$</span> gradientTLBR mid black (<span class="dt">PixelRGB8</span> r g b)
+    a1 r g b n <span class="fu">=</span> onGrid <span class="dv">8</span> <span class="dv">1</span> n <span class="fu">$</span> gradientTRBL mid (<span class="dt">PixelRGB8</span> r g b) black
+    a2 r g b _ <span class="fu">=</span> gradientXY (edge <span class="fu">.</span> mid) black (<span class="dt">PixelRGB8</span> r g b)
+    a3 r0 g0 b0 r1 g1 b1 <span class="fu">=</span>
+      gradientTLBR id (<span class="dt">PixelRGB8</span> r0 g0 b0) (<span class="dt">PixelRGB8</span> r1 g1 b1)</code></pre></div>
+<div class="figure">
+<img src="../img/identicon-06.png" alt="Three figures and background" />
+<p class="caption">Three figures and background</p>
+</div>
+<p>Much better but still sort of boring.</p>
+<h3 id="symmetry">Symmetry</h3>
+<p>What identicons on Stack Overflow have that our identicon doesn’t? Right, symmetry. If you look carefully, identicons on Stack Overflow are always a motif repeated 4 times and every repetition is rotated by 90°. We have several combinators (all of them have <code>Layer -&gt; Layer</code> type) including the one that can simulate Stack Overflow approach:</p>
+<ul>
+<li><p><code>hsym</code> — horizontal symmetry</p></li>
+<li><p><code>vsym</code> — vertical symmetry</p></li>
+<li><p><code>hvsym</code> — horizontal and vertical symmetry</p></li>
+<li><p><code>rsym</code> — just like <code>hvsym</code> but with “rotation”</p></li>
+</ul>
+<p>Let’s use it:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
+  <span class="kw">where</span>
+    i <span class="fu">=</span> <span class="dt">Identicon</span> <span class="fu">:+</span> a0 <span class="fu">:+</span> a1 <span class="fu">:+</span> a2 <span class="fu">:+</span> a3
+    a0 r g b n <span class="fu">=</span> rsym <span class="fu">$</span> onGrid <span class="dv">3</span> <span class="dv">3</span> n <span class="fu">$</span>
+      circle <span class="fu">$</span> gradientTLBR mid black (<span class="dt">PixelRGB8</span> r g b)
+    a1 r g b n <span class="fu">=</span> rsym <span class="fu">$</span>
+      onGrid <span class="dv">8</span> <span class="dv">1</span> n <span class="fu">$</span> gradientTRBL mid (<span class="dt">PixelRGB8</span> r g b) black
+    a2 r g b _ <span class="fu">=</span> gradientXY (edge <span class="fu">.</span> mid) black (<span class="dt">PixelRGB8</span> r g b)
+    a3 r0 g0 b0 r1 g1 b1 <span class="fu">=</span>
+      hvsym <span class="fu">$</span> gradientTLBR id (<span class="dt">PixelRGB8</span> r0 g0 b0) (<span class="dt">PixelRGB8</span> r1 g1 b1)</code></pre></div>
+<p><img src="../img/identicon-07.png" alt="With rotation, one" /> <img src="../img/identicon-08.png" alt="With rotation, two" /> <img src="../img/identicon-09.png" alt="With rotation, three" /></p>
+<p>But hey, we have saved one byte (last argument of <code>a2</code>)! We can feed it into <code>oneof</code> combinator to make things a bit more varying.</p>
+<p><img src="../img/identicon-10.png" alt="Varying center, one" /> <img src="../img/identicon-11.png" alt="Varying center, two" /> <img src="../img/identicon-12.png" alt="Varying center, three" /></p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Of course this is just a preview and the icons shown here are not the most interesting ones you can get. As always, everything is limited only by your imagination. Given such general definition of <code>Layer</code>, you can do whatever you want, even insert some existing pictures into identicons and manipulate them. I find performance satisfactory too, especially if you need small identicons, not 420 × 420 ones as shown here.</p>
+<p>Hope it was interesting and beautiful!</p>
+<h2 id="where-to-get-it">Where to get it</h2>
+<ul>
+<li><a href="https://hackage.haskell.org/package/identicon">Identicon on Hackage</a></li>
+<li><a href="https://github.com/mrkkrp/identicon">GitHub repo</a></li>
+</ul>
+
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.min.js"></script>
+    <script src="../js/put-anchors.js"></script>
+    <footer>
+      <a href="#top">top</a>
+    </footer>
+
+  </body>
+</html>
