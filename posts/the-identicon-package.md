@@ -6,8 +6,8 @@ published: May 28, 2016
 ---
 
 I need to generate identicons for one of my projects so I wrote a package
-for this, of course it's in Haskell. In this blog post I'm gonig to show you
-how it works and what it produces.
+for this in Haskell. In this blog post I'm gonig to show you how it works
+and what it produces.
 
 ## The problem
 
@@ -327,6 +327,23 @@ Let's use it:
 
 But hey, we have saved one byte (last argument of `a2`)! We can feed it into
 `oneof` combinator to make things a bit more varying.
+
+```haskell
+…
+  where
+    i = Identicon :+ a0 :+ a1 :+ a2 :+ a3
+    a0 r g b n = rsym $ onGrid 3 3 n $
+      circle $ gradientTLBR mid black (PixelRGB8 r g b)
+    a1 r g b n = rsym $
+      onGrid 8 1 n $ gradientTRBL mid (PixelRGB8 r g b) black
+    a2 r g b n = oneof [ gradientXY (edge . mid)
+                       , gradientLR mid
+                       , gradientTB mid
+                       ] n black (PixelRGB8 r g b)
+    a3 r0 g0 b0 r1 g1 b1 =
+      hvsym $ gradientTLBR id (PixelRGB8 r0 g0 b0) (PixelRGB8 r1 g1 b1)
+
+```
 
 ![Varying center, one](/img/identicon-10.png)
 ![Varying center, two](/img/identicon-11.png)
