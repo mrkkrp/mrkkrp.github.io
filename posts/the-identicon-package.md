@@ -83,7 +83,7 @@ If `ByteString` is too short we get `Nothing`. Fair enough, and since hashes
 typically have fixed size, it should not be a problem. Also, width and
 height must be greater than 0 or again you will get `Nothing`.
 
-Remaining part of the blog posts is about writing the `Implementation Icon`
+Remaining part of the blog post is about writing the `Implementation Icon`
 thing.
 
 ## Writing layers
@@ -124,7 +124,7 @@ The function takes:
 
 …and returns a `PixelRGB8`. Note how abstract a layer actually is. It's like
 vector graphics, it doesn't care about width and height, you can render it
-in any size. This actually means that once you have a `Layer`, you can write
+in any size. This means that once you have a `Layer`, you can write
 combinators that transform it in various ways and the whole thing is very
 composable as we will see shortly.
 
@@ -180,7 +180,7 @@ Apart from solid color option, there are various gradients:
 
 * `gradientTRBL` — the same, but with top right and bottom left corners
 
-* `gradientXY` — one color is on edges and another one in the middle
+* `gradientXY` — one color is on edges and another in the middle
 
 We can try them, let's “mute” all layers but one:
 
