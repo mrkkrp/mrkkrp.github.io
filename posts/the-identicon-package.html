@@ -85,7 +85,7 @@ genIcon <span class="fu">=</span> renderIdenticon (<span class="dt">Proxy</span>
     i <span class="fu">=</span> undefined <span class="co">-- TODO</span></code></pre></div>
 <p><code>renderIdenticon</code> is provided by the library and it’s the most important function that actually produces images. It’s a good idea to wrap it like this to get a very straightforward image factory. As you can see we’re using the wonderful <a href="https://hackage.haskell.org/package/JuicyPixels"><code>JuicyPixels</code></a> package to work with images. Currently <code>identicon</code> only produces <code>PixelRGB8</code> pixels for speed.</p>
 <p>If <code>ByteString</code> is too short we get <code>Nothing</code>. Fair enough, and since hashes typically have fixed size, it should not be a problem. Also, width and height must be greater than 0 or again you will get <code>Nothing</code>.</p>
-<p>Remaining part of the blog posts is about writing the <code>Implementation Icon</code> thing.</p>
+<p>Remaining part of the blog post is about writing the <code>Implementation Icon</code> thing.</p>
 <h2 id="writing-layers">Writing layers</h2>
 <p><code>Implementation Icon</code> is always a bunch of functions that are kept together with help of <code>(:+)</code> data constructor (this one works on term level). Every function gets its bytes as discrete <code>Word8</code> arguments and produces a <code>Layer</code>.</p>
 <p>In practice it means that <code>i</code> has the following type:</p>
@@ -106,7 +106,7 @@ genIcon <span class="fu">=</span> renderIdenticon (<span class="dt">Proxy</span>
 <li>X coordinate</li>
 <li>Y coordinate</li>
 </ul>
-<p>…and returns a <code>PixelRGB8</code>. Note how abstract a layer actually is. It’s like vector graphics, it doesn’t care about width and height, you can render it in any size. This actually means that once you have a <code>Layer</code>, you can write combinators that transform it in various ways and the whole thing is very composable as we will see shortly.</p>
+<p>…and returns a <code>PixelRGB8</code>. Note how abstract a layer actually is. It’s like vector graphics, it doesn’t care about width and height, you can render it in any size. This means that once you have a <code>Layer</code>, you can write combinators that transform it in various ways and the whole thing is very composable as we will see shortly.</p>
 <h3 id="filling-with-solid-color">Filling with solid color</h3>
 <p>OK, we can transform existing <code>Layer</code>s, but how do we get one to start with? Simplest layer would be just an area filled with one solid color. He have it under <code>color</code> name:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">color ::</span> <span class="dt">PixelRGB8</span> <span class="ot">-&gt;</span> <span class="dt">Layer</span>
@@ -133,7 +133,7 @@ black <span class="fu">=</span> <span class="dt">PixelRGB8</span> <span class="d
 <li><p><code>gradientTB</code> — color transition from top to bottom</p></li>
 <li><p><code>gradientTLBR</code> — color transition from top left corner to bottom right corner</p></li>
 <li><p><code>gradientTRBL</code> — the same, but with top right and bottom left corners</p></li>
-<li><p><code>gradientXY</code> — one color is on edges and another one in the middle</p></li>
+<li><p><code>gradientXY</code> — one color is on edges and another in the middle</p></li>
 </ul>
 <p>We can try them, let’s “mute” all layers but one:</p>
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">…
