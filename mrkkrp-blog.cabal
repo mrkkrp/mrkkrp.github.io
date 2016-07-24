@@ -1,14 +1,22 @@
 name:                 mrkkrp-blog
 version:              0.1.0.0
+cabal-version:        >= 1.10
 synopsis:             Mark Karpov's personal blog
 description:          Mark Karpov's personal blog
 homepage:             https://mrkkrp.github.io/
 license-file:         LICENSE.txt
-author:               Mark Karpov et al
-category:             web
+author:               Mark Karpov <markkarpov@opmbx.org>
+maintainer:           Mark Karpov <markkarpov@opmbx.org>
+category:             Web
 build-type:           Simple
-extra-source-files:   README.md
-cabal-version:        >= 1.22
+extra-doc-files:      README.md
+extra-source-files:   makefile
+data-files:           css/*.css
+                    , img/*.png
+                    , js/*.js
+                    , posts/*.md
+                    , templates/*.html
+                    , contact.md
 
 executable site
   main-is:            Main.hs
