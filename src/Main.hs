@@ -7,6 +7,7 @@
 
 import Data.Monoid ((<>))
 import Hakyll
+import Text.Pandoc.Options
 
 feedConfig :: FeedConfiguration
 feedConfig = FeedConfiguration
@@ -16,6 +17,12 @@ feedConfig = FeedConfiguration
   , feedAuthorEmail = "markkarpov@opmbx.org"
   , feedRoot        = "https://mrkkrp.github.com"
   }
+
+pandocCompiler' :: Compiler (Item String)
+pandocCompiler' = pandocCompilerWith readerOpts writerOpts
+  where
+    readerOpts = defaultHakyllReaderOptions
+    writerOpts = defaultHakyllWriterOptions { writerHTMLMathMethod = MathJax "" }
 
 main :: IO ()
 main = hakyll $ do
@@ -34,7 +41,7 @@ main = hakyll $ do
 
   match "posts/*" $ do
     route $ setExtension "html"
-    compile $ pandocCompiler
+    compile $ pandocCompiler'
       >>= loadAndApplyTemplate "templates/post.html" datedContext
       >>= loadAndApplyTemplate "templates/default.html"  datedContext
       >>= relativizeUrls
@@ -54,7 +61,7 @@ main = hakyll $ do
 
   match "contact.md" $ do
     route $ setExtension "html"
-    compile $ pandocCompiler
+    compile $ pandocCompiler'
       >>= loadAndApplyTemplate "templates/default.html" datedContext
       >>= relativizeUrls
 
