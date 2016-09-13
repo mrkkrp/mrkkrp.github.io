@@ -26,15 +26,15 @@ more-or-less proper understanding of what some things like “isomorphism”
 mean, I decided to read a book that describes all the concepts in order and
 using simple language.
 
-The book I found is called “Conceptual Mathematics — A First Introduction to
-Categories” by F. William Lawvere and Stephen H. Schanuel. The book does not
-assume math background of any sort and *anyone* can understand concepts
-described in it. You can give it a try, but the books in not short — 376
-pages, and it does not even get you to monads (probably will need something
-else after it if I decide that I haven't got enough). So this post is the
-first in a series of blog posts that I want to write as a sort of overgrown
-cheat sheets that highlight important ideas from category theory in a
-concise form.
+The book I found is
+called [“Conceptual Mathematics — A First Introduction to Categories”](http://fef.ogu.edu.tr/matbil/eilgaz/kategori.pdf) by
+F. William Lawvere and Stephen H. Schanuel. The book does not assume math
+background of any sort and *anyone* can understand concepts described in it.
+You can give it a try, but the books in not short — 376 pages, and it does
+not even get you to monads (probably will need something else after it if I
+decide that I haven't got enough). So this post is the first in a series of
+blog posts that I want to write as a sort of overgrown cheat sheets that
+highlight important ideas from category theory in a concise form.
 
 I hope that working on the blog posts will help me better organize the ideas
 from the book in my head, and may be useful for others who do not
@@ -50,30 +50,33 @@ are neither programmers nor mathematicians, and it worked!*
 ## What is category?
 
 As everything in math, we need some starting points and definitions to build
-on. Category theory talks about categories which have *objects* and *maps*
-(synonyms: *arrows*, *morphisms*, *functions*, *transformations*).
+on. The main definition is of course **category** itself. Category is
+defined by **objects** and **maps** (synonyms: *arrows*, *morphisms*,
+*functions*, *transformations*). There are also a few laws that should hold
+for the objects and maps in order to form a category, but we will get to
+them.
 
-*Objects* can be pretty much everything. The simplest and most intuitive
+**Objects** can be pretty much everything. The simplest and most intuitive
 object is probably *finite set* (just a collection of things), and it will
 be discussed in the next section. It's worth noticing that objects in a
 category may have additional structure or properties associated with them,
 and they should not “lose” the properties when we work within one category
 (makes sense, otherwise we would kind of “walk” outside of category).
 
-*Maps* have *domain*, *codomain*, and a rule assigning to each element $a$
-in the domain, an element $b$ in the codomain. This $b$ is denoted by $f
-\circ a$ (or sometimes $f(a)$), read “$f$ of $a$”. Simply put, domain
-contains all possible arguments of the mapping function and codomain
-contains output values.
+**Maps** have **domain** (an object), **codomain** (an object again), and a
+rule assigning to each element $a$ in the domain, an element $b$ in the
+codomain. This $b$ is denoted by $f \circ a$ (or sometimes $f(a)$), read
+“$f$ of $a$”. Simply put, domain contains all possible arguments of the
+mapping function and codomain contains output values.
 
 Important thing here is that if we say that object $A$ is domain and object
 $B$ is codomain of some map, then the map should be defined for every value
 $a$ in $A$ (i.e. it should “use” all input values), but not necessarily it
 should map to all values in $B$. This may seem obvious, but I want to put it
 here explicitly, because I found this “rule” useful for understanding some
-conclusions in the book many times. Of course, there can be only one arrow
-going from each element in domain, because otherwise the whole mapping would
-be ambiguous.
+conclusions in the book many times. Of course, there can be only one element
+in codomain corresponding to a given element in domain, because otherwise
+the whole mapping would be ambiguous.
 
 At this point it should be clear that category theory is a very abstract
 thing. If we study abstract transformations of abstract objects, then
@@ -100,14 +103,14 @@ The set $\{John, Mary, Sam\}$ may be drawn just as:
 
 where a dot represents each element. We can also leave off the labels if
 then are irrelevant to discussion. Such picture, labelled or not, is called
-*internal diagram* of the set.
+**internal diagram** of the set.
 
 We can picture a map as collection of arrows that go from elements of one
 set to element of another set:
 
 ![Internal diagram of a map](/img/ct1-02.svg)
 
-There are also *external diagrams* for the cases when we do not care about
+There are also **external diagrams** for the cases when we do not care about
 concrete elements of objects:
 
 $$
@@ -117,15 +120,15 @@ $$
 ## Endomaps and identity maps
 
 A map in which the domain and codomain are the same object is called an
-*endomap* (“endo”, a prefix from Greek ἔνδον *endon* meaning “within, inner,
-absorbing, or containing” Wikipedia says). For endomaps we have a special
-form of internal diagram:
+**endomap** (“endo”, a prefix from Greek ἔνδον *endon* meaning “within,
+inner, absorbing, or containing” Wikipedia says). For endomaps we have a
+special form of internal diagram:
 
 ![Internal diagram of an endomap](/img/ct1-03.svg)
 
 It turns out that in every category, for each object, we have a map that
-maps elements of an object $A$ to themselves. This map is called *identity
-map* and is denoted as $1_\text{A}$. Here is an example of internal diagram
+maps elements of an object $A$ to themselves. This map is called **identity
+map** and is denoted as $1_\text{A}$. Here is an example of internal diagram
 of an identity map (taken from the book, like the pictures above):
 
 ![Internal diagram of an identity map](/img/ct1-04.svg)
@@ -139,12 +142,13 @@ The final, fourth (after objects, maps, and identity maps) thing that a
 category should have (or support) is the ability to *compose maps*. That's
 where all the fun begins.
 
-Composition of two maps $f$ and $g$, written as $f \circ g$ (read as “$f$
-after $g$”) is another map with the same domain as domain of $g$ and the
-same codomain as codomain of $f$. To find output value for an input $a$ we
-first “apply” (or follow arrows) of map $g$ and then take the result, feed
-it as input to map $f$ and get the final result. Obviously, to feed result
-of $g$ as input to $f$, domain of $f$ should be the same of codomain of $g$.
+**Composition** of two maps $f$ and $g$, written as $f \circ g$ (read as
+“$f$ after $g$”) is another map with the same domain as domain of $g$ and
+the same codomain as codomain of $f$. To find output value for an input $a$
+we first “apply” (or follow arrows) of map $g$ and then take the result,
+feed it as input to map $f$ and get the final result. Obviously, to feed
+result of $g$ as input to $f$, domain of $f$ should be the same of codomain
+of $g$.
 
 In a more familiar notation:
 
@@ -167,7 +171,7 @@ $$
 Not only the composition of maps should be possible, but it should satisfy
 these laws so objects and maps “fit together nicely”:
 
-1. The *identity laws*:
+1. The **identity laws**:
 
     $$A \xrightarrow{1_\text{A}} A \xrightarrow{g} B \Rightarrow A \xrightarrow{g \circ 1_\text{A} = g} B$$
 
@@ -175,7 +179,7 @@ these laws so objects and maps “fit together nicely”:
 
     $$A \xrightarrow{f} B \xrightarrow{1_\text{B}} B \Rightarrow A \xrightarrow{1_\text{B} \circ f = f} B$$
 
-2. The *associative law*:
+2. The **associative law**:
 
     $$A \xrightarrow{f} B \xrightarrow{g} C \xrightarrow{h} D \Rightarrow A \xrightarrow{h \circ (g \circ f) = (h \circ g) \circ f} D$$
 
@@ -184,22 +188,26 @@ numbers. The identity laws ensure that identity maps work indeed like number
 1, so we can easily remove (or add) them without changing anything. We will
 use that trick a lot. The associative law allows us to move parenthesis. The
 analogy between multiplication and composition does not extend too far
-though, because we cannot generally swap order of maps in composition
-because their inputs and outputs are sort of “typed” by domain and codomain
-objects.
+though, because we cannot generally swap order of maps in composition, since
+their inputs and outputs are sort of “typed” by domain and codomain objects.
 
 ## Isomorphisms
 
-One of simplest and ubiquitous things in category theory is *isomorphism*. A
-map $A \xrightarrow{f} B$ is called an *isomorphism*, or *invertable map*,
-if there is a map $B \xrightarrow{g} A$ for which $g \circ f = 1_\text{A}$
-and $f \circ g = 1_\text{B}$. Two objects $A$ and $B$ are said to be
-*isomorphic* if there is at least one isomorphism $A \xrightarrow{f} B$.
-Pretty easy, right?
+One of simplest and ubiquitous things in category theory is **isomorphism**.
+A map $A \xrightarrow{f} B$ is called an **isomorphism**, or **invertable
+map**, if there is a map $B \xrightarrow{g} A$ for which $g \circ f =
+1_\text{A}$ and $f \circ g = 1_\text{B}$. Two objects $A$ and $B$ are said
+to be **isomorphic** if there is at least one isomorphism $A \xrightarrow{f}
+B$.
 
-Isomorphisms are cool. They allow to move freely from one object to another.
-For example, Cartesian system of coordinates is based on the idea that a
-pair of numbers is isomorphic to a point on plane, then you work from that.
+What does $g \circ f = 1_\text{A}$ mean? It means that if we apply $f$ to
+any $a$ from $A$, feed the result into $g$, then we get the same value $a$
+we started with. Pretty easy, right?
+
+Isomorphisms are cool. They allow to move freely from one representation of
+object to another. For example, Cartesian system of coordinates is based on
+the idea that a pair of numbers is isomorphic to a point on plane, then you
+work from that.
 
 There are a few properties of isomophisms that come directly from the
 associative and identity laws of maps:
@@ -227,13 +235,15 @@ $$A \xrightarrow{f} B, B \xrightarrow{f^{-1}} A, f^{-1} \circ f = 1_\text{A}, f 
 $$B \xrightarrow{k} C, C \xrightarrow{k^{-1}} B, k^{-1} \circ k = 1_\text{B}, k \circ k^{-1} = 1_\text{C}$$
 
 In order to show that $A$ is isomorphic to $C$, we need to show that the $k
-\circ f$ map has an inverse $g$:
+\circ f$ map (the only map that takes us from $A$ to $C$) has an inverse
+$g$. Replacing $f$ with $k \circ f$ in the definition of isomorphism we
+have:
 
 $$g \circ (k \circ f) = 1_\text{A}$$
 $$(k \circ f) \circ g = 1_\text{C}$$
 
-For that we need to “cancel” first $k$, then $f$, so it reasonable to try $g
-= f^{-1} \circ k^{-1}$:
+To go back from $C$ to $A$ we have the only way: $C \xrightarrow{f^{-1}
+\circ k^{-1}} A$, let's show that it actually an inverse for $k \circ f$:
 
 $$(f^{-1} \circ k^{-1}) \circ (k \circ f) = 1_\text{A}$$
 $$f^{-1} \circ (k^{-1} \circ k) \circ f = 1_\text{A}$$
@@ -241,6 +251,7 @@ $$f^{-1} \circ 1_\text{B} \circ f = 1_\text{A}$$
 $$f^{-1} \circ f = 1_\text{A}$$
 $$1_\text{A} = 1_\text{A}$$
 
+This makes use of identity laws and associative law we discussed previously.
 The second equation can be proved the same way.
 
 If $f$ has an inverse, then $f$ satisfies two cancellation laws:
@@ -251,8 +262,7 @@ If $f$ has an inverse, then $f$ satisfies two cancellation laws:
 Let prove the first one. We assume that $f$ has an inverse and that $f \circ
 h = f \circ k$ and we try to show that $h = k$. Since $f \circ h$ and $f
 \circ k$ are the same map, $f^{-1} \circ (f \circ h)$ and $f^{-1} \circ (f
-\circ k)$ are also the same. But now we can use the same rules we already
-know:
+\circ k)$ are also the same. But now we can use the rules we already know:
 
 $$f^{-1} \circ (f \circ h) = f^{-1} \circ (f \circ k)$$
 $$(f^{-1} \circ f) \circ h = (f^{-1} \circ f) \circ k$$
@@ -261,53 +271,75 @@ $$h = k$$
 
 ## Sections and retractions
 
-…
+Let's give names to some special maps that will be very useful to us later.
+If $A \xrightarrow{f} B$, then
 
-## Existence of sections and retractions
+* a **retraction** for $f$ is a map $B \xrightarrow{r} A$ for which $r \circ
+  f = 1_\text{A}$;
 
-…
+* a **section** for $f$ is a map $B \xrightarrow{s} A$ for which $f \circ s
+  = 1_\text{B}$.
+
+First thing to note is that we cannot say that some map $r$ is retraction
+*by itself*, it only makes sense to say that $r$ is retraction for another
+map $f$. The same for sections.
+
+Useful mnemonics for retraction is that it retracts values “back from where
+they come”. While the name “section” is a little trickier.
+
+TODO explain why we call it “section”
+
+Note that if we have $r \circ s = 1_\text{A}$, then $r$ is retraction for
+$s$ and $s$ is section for $r$.
 
 ## Composing sections and retractions
 
 …
 
-## Theorem on Uniqueness of Inverses
+## Monomorphism and epimorphism
 
 …
+
+## Idempotents
+
+**Definition:** *An endomap $e$ is called **idempotent** if $e \circ e = e$.*
+
+## Theorem of uniqueness of inverses
+
+**Theorem (uniqueness of inverses)**: *If $f$ has both a retraction $r$ and
+a section $s$, then $r = s$*.
+
+**Proof:** From the definition we have, if $A \xrightarrow{f} B$, both of
+the equations
+
+$$r \circ f = 1_\text{A} \text{ and } f \circ s = 1_\text{B}$$
+
+Then by identity and associative law
+
+$$r = r \circ 1_\text{B} = r \circ (f \circ s) = (r \circ f) \circ s = 1_\text{A} \circ s = s$$
+
+## Another definition of isomorphism, automorphism
+
+Using the notions of “section” and “retraction” we can rephrase the
+definition of “isomorphism”.
+
+**Definitions:** *A map $f$ is called an **isomorphism** if there exists
+another map $f^{-1}$ which is both a retraction and a section for $f$*:
+
+$$A \xrightarrow{f} B, f \circ f^{-1} = 1_\text{B}$$
+$$A \xleftarrow{f^{-1}} B, f^{-1} \circ f = 1_\text{A}$$
+
+*Such a map $f^{-1}$ is called **the inverse map for** $f$; since both of
+the two equations are required, the theorem of uniqueness of inverses shows
+that there is only one inverse.*
+
+A map that is an endomap and at the same time an isomorphism is usually
+called by the one word *automorphism*.
 
 ## Determination and choice problems
 
 …
 
-## Another definition of isomorphism
+## Existence of sections and retractions
 
 …
-
-## Automorphisms
-
-…
-
-## Points
-
-A *point* of a set $X$ is a map $1 \to X$ from singleton set (denoted just
-as $1$) to set $X$. The map “selects” one element from $X$. Since a point is
-a map, we can compose it with another map and get a point again. Yes, this
-is a small section to extend our category theoretical dictionary.
-
-## Constant maps
-
-…
-
-## Retracts and Idempotents
-
-…
-
-Also involutions.
-
-## Surjectivity and incjectivity
-
-…
-I'd like to list here some terms that you may encounter when maps are
-discussed. Typically when codomain $B$ is “smaller” than domain $A$, it's
-said that mapping *sorts* values in domain, so we have $B$-valued property
-on $A$.
