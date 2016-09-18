@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <meta name="author" content="Mark Karpov" />
+    
+    
+    <title>
+      Category Theory Basics, Part I
+      
+      by Mark Karpov
+      
+    </title>
+    
+    <link rel="stylesheet" type="text/css" href="../css/style.css" />
+  </head>
+
+  <body>
+    <a name="top"></a>
+    <nav>
+      <a href="../index.html">
+        index
+      </a>
+      &middot;
+      <a href="https://github.com/mrkkrp/mrkkrp.github.io/tree/src">
+        src
+      </a>
+      &middot;
+      <a href="../feed.atom">
+        feed
+      </a>
+      &middot;
+      <a href="https://creativecommons.org/licenses/by/4.0/">
+        license
+      </a>
+      &middot;
+      <a href="../contact.html">
+        etc
+      </a>
+    </nav>
+
+    <div class="content">
+      
+      <h1>
+        Category Theory Basics, Part I
+        
+      </h1>
+      
+      
+<p class="credit">
+  by Mark Karpov
+</p>
+
+
+
+<em>
+  Published on September 18, 2016
+</em>
+
+
+<p>When you do Haskell on daily basis (simply put, earn a living writing Haskell code), sooner or later you start to regret you don’t have background in advanced math (unless you have such background, of course, and in that case the post will be probably uninteresting for you). I think it’s a situation in which people who use Haskell as engineers (not researchers) find themselves at some point.</p>
+<p>The most important and relevant math area for a Haskeller is probably category theory, which <em>does look scary</em> at first and Wikipedia articles/videos of lectures seem to be only partially understandable, always leaving you with a bunch of new notions unexplained. There is no problem to understand what <code>Monad</code> means and how it’s useful in functional programming (although the abstraction may take some time to sink in), but the feeling of missing “bigger picture”, full of wonderful ideas may not leave you once you started to use abstractions from category theory.</p>
+<p>So, having intuitive understanding of what the word “injective” means and more-or-less proper understanding of what some things like “isomorphism” mean, I decided to read a book that describes all the concepts in order and using simple language.</p>
+<p>The book I found is called <a href="http://fef.ogu.edu.tr/matbil/eilgaz/kategori.pdf">“Conceptual Mathematics — A First Introduction to Categories”</a> by F. William Lawvere and Stephen H. Schanuel. The book does not assume math background of any sort and <em>anyone</em> can understand concepts described in it. You can give it a try, but the books in not short — 376 pages, and it does not even get you to monads (probably will need something else after it if I decide that I haven’t got enough). So this post is the first in a series of blog posts that I want to write as a sort of overgrown cheat sheets that highlight important ideas from category theory in a concise form.</p>
+<p>I hope that working on the blog posts will help me better organize the ideas from the book in my head, and may be useful for others who do not necessarily have the time to read the book.</p>
+<p><em>Note: here is a somewhat similar post <a href="http://science.raphael.poss.name/categories-from-scratch.html">here</a>, but it tries to make the concepts more programmer-friendly by providing examples from “programming world” using pipes, compilers, and circuits. I have no such intention, and in fact I tested this descriptions on people who are neither programmers nor mathematicians, and it worked!</em></p>
+<h2 id="what-is-category">What is category?</h2>
+<p>As everything in math, we need some starting points and definitions to build on. The main definition is of course <strong>category</strong> itself. Category is defined by <strong>objects</strong> and <strong>maps</strong> (synonyms: <em>arrows</em>, <em>morphisms</em>, <em>functions</em>, <em>transformations</em>). There are also a few laws that should hold for the objects and maps in order to form a category, but we will get to them a bit later.</p>
+<p><strong>Objects</strong> can be pretty much everything. The simplest and most intuitive object is probably <em>finite set</em> (just a collection of things), and it will be discussed in the next section. The term rather means type of something, not particular value. It’s worth noticing that objects in a category may have additional structure or properties associated with them, and they should not “lose” the properties when we work within one category (makes sense, otherwise we would kind of “walk” outside of category).</p>
+<p><strong>Maps</strong> have <strong>domain</strong> (an object), <strong>codomain</strong> (an object again), and a rule assigning to each element <span class="math inline">\(a\)</span> in the domain, an element <span class="math inline">\(b\)</span> in the codomain. This <span class="math inline">\(b\)</span> is denoted by <span class="math inline">\(f \circ a\)</span> (or sometimes <span class="math inline">\(f(a)\)</span>), read “<span class="math inline">\(f\)</span> of <span class="math inline">\(a\)</span>”. Simply put, domain contains all possible arguments of the mapping function and codomain contains output values.</p>
+<p>Important thing here is that if we say that object <span class="math inline">\(A\)</span> is domain and object <span class="math inline">\(B\)</span> is codomain of some map, then the map should be defined for every value <span class="math inline">\(a\)</span> in <span class="math inline">\(A\)</span> (i.e. it should “use” all input values), but not necessarily it should map to all values in <span class="math inline">\(B\)</span>. This may seem obvious, but I want to put it here explicitly, because I found this “rule” useful for understanding some conclusions in the book many times. Of course, there can be only one element in codomain corresponding to a given element in domain, because otherwise the whole mapping would be ambiguous.</p>
+<p>At this point it should be clear that category theory is a very abstract thing. If we study abstract transformations of abstract objects, then certainly we study something that takes place in every area of science and human knowledge, because human knowledge in general has to do with objects, their relations and mappings.</p>
+<p>There are a couple more things that a category should have, and I’ll describe them in a moment, but first it’s good to introduce category of finite sets and some notation that will be helpful for visualization.</p>
+<h2 id="category-of-finite-sets-internal-and-external-diagrams">Category of finite sets, internal and external diagrams</h2>
+<p>In category of finite sets objects are finite sets and maps are rules how to go from a value in one set to a value in another set. Due to how our brain works, it’s much easier to reason about collections of values and their mappings, than about abstract categories. We will be using category of finite sets to explain most concepts here, and to visualize them, we will draw pictures of the sets and maps between them.</p>
+<p>The set <span class="math inline">\(\{John, Mary, Sam\}\)</span> may be drawn just as:</p>
+<div class="figure">
+<img src="../img/ct1-01.svg" alt="Internal diagram of a set" />
+<p class="caption">Internal diagram of a set</p>
+</div>
+<p>where a dot represents each element. We can also leave off the labels if then are irrelevant to discussion. Such picture, labelled or not, is called <strong>internal diagram</strong> of the set.</p>
+<p>We can picture a map as collection of arrows that go from elements of one set to element of another set:</p>
+<div class="figure">
+<img src="../img/ct1-02.svg" alt="Internal diagram of a map" />
+<p class="caption">Internal diagram of a map</p>
+</div>
+<p>There are also <strong>external diagrams</strong> for the cases when we do not care about concrete elements of objects:</p>
+<p><span class="math display">\[
+A \xrightarrow{f} B
+\]</span></p>
+<h2 id="endomaps-and-identity-maps">Endomaps and identity maps</h2>
+<p>A map in which the domain and codomain are the same object is called an <strong>endomap</strong> (“endo”, a prefix from Greek ἔνδον <em>endon</em> meaning “within, inner, absorbing, or containing” Wikipedia says). For endomaps we have a special form of internal diagram:</p>
+<div class="figure">
+<img src="../img/ct1-03.svg" alt="Internal diagram of an endomap" />
+<p class="caption">Internal diagram of an endomap</p>
+</div>
+<p>It turns out that in every category, for each object, we have a map that maps elements of an object <span class="math inline">\(A\)</span> to themselves. This map is called <strong>identity map</strong> and is denoted as <span class="math inline">\(1_\text{A}\)</span>. Here is an example of internal diagram of an identity map (taken from the book, like the pictures above):</p>
+<div class="figure">
+<img src="../img/ct1-04.svg" alt="Internal diagram of an identity map" />
+<p class="caption">Internal diagram of an identity map</p>
+</div>
+<p>The <span class="math inline">\(1_\text{A}\)</span> notation will make more sense once we learn about <em>composition of maps</em> in the next section.</p>
+<p><strong>Definition:</strong> <em>An endomap <span class="math inline">\(e\)</span> is called <strong>idempotent</strong> if <span class="math inline">\(e \circ e = e\)</span>.</em></p>
+<h2 id="composition">Composition</h2>
+<p>The final, fourth (after objects, maps, and identity maps) thing that a category should have (or support) is the ability to <em>compose maps</em>. That’s where all the fun begins.</p>
+<p><strong>Composition</strong> of two maps <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span>, written as <span class="math inline">\(f \circ g\)</span> (read as “<span class="math inline">\(f\)</span> after <span class="math inline">\(g\)</span>”) is another map with the same domain as domain of <span class="math inline">\(g\)</span> and the same codomain as codomain of <span class="math inline">\(f\)</span>. To find output value for an input <span class="math inline">\(a\)</span> we first “apply” (or follow arrows) of map <span class="math inline">\(g\)</span> and then take the result, feed it as input to map <span class="math inline">\(f\)</span> and get the final result. Obviously, to feed result of <span class="math inline">\(g\)</span> as input to <span class="math inline">\(f\)</span>, domain of <span class="math inline">\(f\)</span> should be the same of codomain of <span class="math inline">\(g\)</span>.</p>
+<p>In a more familiar notation:</p>
+<p><span class="math display">\[
+f \circ g = f(g(a))
+\]</span></p>
+<p>That equation also explains why composition “works” from right to left (with respect to the <span class="math inline">\(f \circ g\)</span> notation), it’s from the desire to preserve order of functions when we go from a more explicit notation on the right hand side to notation on the left hand side.</p>
+<p>Once we have the <span class="math inline">\(f \circ g\)</span> map we can forget how we got it and treat it just as an ordinary map, which it is, of course:</p>
+<p><span class="math display">\[
+A \xrightarrow{g} B \xrightarrow{f} C = A \xrightarrow{f \circ g} C
+\]</span></p>
+<p>Not only the composition of maps should be possible, but it should satisfy these laws so objects and maps “fit together nicely”:</p>
+<ol style="list-style-type: decimal">
+<li><p>The <strong>identity laws</strong>:</p>
+<p><span class="math display">\[A \xrightarrow{1_\text{A}} A \xrightarrow{g} B \Rightarrow A \xrightarrow{g \circ 1_\text{A} = g} B\]</span></p>
+<p>and</p>
+<p><span class="math display">\[A \xrightarrow{f} B \xrightarrow{1_\text{B}} B \Rightarrow A \xrightarrow{1_\text{B} \circ f = f} B\]</span></p></li>
+<li><p>The <strong>associative law</strong>:</p>
+<p><span class="math display">\[A \xrightarrow{f} B \xrightarrow{g} C \xrightarrow{h} D \Rightarrow A \xrightarrow{h \circ (g \circ f) = (h \circ g) \circ f} D\]</span></p></li>
+</ol>
+<p>These rules makes composition of maps work similarly to multiplication of numbers. The identity laws ensure that identity maps work indeed like number 1, so we can easily remove (or add) them without changing anything. We will use that trick a lot. The associative law allows us to move parenthesis. The analogy between multiplication and composition does not extend too far though, because we cannot generally swap order of maps in composition, since their inputs and outputs are sort of “typed” by domain and codomain objects.</p>
+<h2 id="isomorphisms">Isomorphisms</h2>
+<p>One of simplest and ubiquitous things in category theory is <strong>isomorphism</strong>. A map <span class="math inline">\(A \xrightarrow{f} B\)</span> is called an <strong>isomorphism</strong>, or <strong>invertable map</strong>, if there is a map <span class="math inline">\(B \xrightarrow{g} A\)</span> for which <span class="math inline">\(g \circ f = 1_\text{A}\)</span> and <span class="math inline">\(f \circ g = 1_\text{B}\)</span>. Two objects <span class="math inline">\(A\)</span> and <span class="math inline">\(B\)</span> are said to be <strong>isomorphic</strong> if there is at least one isomorphism <span class="math inline">\(A \xrightarrow{f} B\)</span>.</p>
+<p>What does <span class="math inline">\(g \circ f = 1_\text{A}\)</span> mean? It means that if we apply <span class="math inline">\(f\)</span> to any <span class="math inline">\(a\)</span> from <span class="math inline">\(A\)</span>, feed the result into <span class="math inline">\(g\)</span>, then we get the same value <span class="math inline">\(a\)</span> we started with. Pretty easy, right?</p>
+<p>Isomorphisms are cool. They allow to move freely from one representation of object to another. For example, Cartesian system of coordinates is based on the idea that a pair of numbers is isomorphic to a point on plane, then you work from that.</p>
+<p>There are a few properties of isomophisms that come directly from the associative and identity laws of maps:</p>
+<ul>
+<li><p><em>Reflexive</em>: <span class="math inline">\(A\)</span> is isomorphic to <span class="math inline">\(A\)</span> (follows from existence of identity maps).</p></li>
+<li><p><em>Symmetric</em>: if <span class="math inline">\(A\)</span> is isomorphic to <span class="math inline">\(B\)</span>, then <span class="math inline">\(B\)</span> is isomorphic to <span class="math inline">\(A\)</span>. This simply follows from the definition of isomorphism.</p></li>
+<li><p><em>Transitive</em> if <span class="math inline">\(A\)</span> is isomorphic to <span class="math inline">\(B\)</span>, and <span class="math inline">\(B\)</span> is isomorphic to <span class="math inline">\(C\)</span>, then <span class="math inline">\(A\)</span> is isomorphic to <span class="math inline">\(C\)</span> (see the proof below).</p></li>
+</ul>
+<p><strong>Notation</strong>: if <span class="math inline">\(A \xrightarrow{f} B\)</span> has an inverse, then the (one and only) inverse for <span class="math inline">\(f\)</span> is denoted by the symbol <span class="math inline">\(f^{-1}\)</span> (read “<span class="math inline">\(f\)</span>-inverse”, or “the inverse of <span class="math inline">\(f\)</span>”). Yes, again we have the analogies with numbers!</p>
+<p><span class="math display">\[
+f^{-1} \circ f = 1_\text{A}, f \circ f^{-1} = 1_\text{B}
+\]</span></p>
+<p>Let’s prove the transitive property now as an exercise. We are given that:</p>
+<p><span class="math display">\[A \xrightarrow{f} B, B \xrightarrow{f^{-1}} A, f^{-1} \circ f = 1_\text{A}, f \circ f^{-1} = 1_\text{B}\]</span> <span class="math display">\[B \xrightarrow{k} C, C \xrightarrow{k^{-1}} B, k^{-1} \circ k = 1_\text{B}, k \circ k^{-1} = 1_\text{C}\]</span></p>
+<p>In order to show that <span class="math inline">\(A\)</span> is isomorphic to <span class="math inline">\(C\)</span>, we need to show that the <span class="math inline">\(k \circ f\)</span> map (the only map that takes us from <span class="math inline">\(A\)</span> to <span class="math inline">\(C\)</span>) has an inverse <span class="math inline">\(g\)</span>. Replacing <span class="math inline">\(f\)</span> with <span class="math inline">\(k \circ f\)</span> in the definition of isomorphism we have:</p>
+<p><span class="math display">\[g \circ (k \circ f) = 1_\text{A}\]</span> <span class="math display">\[(k \circ f) \circ g = 1_\text{C}\]</span></p>
+<p>To go back from <span class="math inline">\(C\)</span> to <span class="math inline">\(A\)</span> we have the only way: <span class="math inline">\(C \xrightarrow{f^{-1} \circ k^{-1}} A\)</span>, let’s show that it actually an inverse for <span class="math inline">\(k \circ f\)</span>:</p>
+<p><span class="math display">\[(f^{-1} \circ k^{-1}) \circ (k \circ f) = 1_\text{A}\]</span> <span class="math display">\[f^{-1} \circ (k^{-1} \circ k) \circ f = 1_\text{A}\]</span> <span class="math display">\[f^{-1} \circ 1_\text{B} \circ f = 1_\text{A}\]</span> <span class="math display">\[f^{-1} \circ f = 1_\text{A}\]</span> <span class="math display">\[1_\text{A} = 1_\text{A}\]</span></p>
+<p>This makes use of identity laws and associative law we discussed previously. The second equation can be proved the same way.</p>
+<p>If <span class="math inline">\(f\)</span> has an inverse, then <span class="math inline">\(f\)</span> satisfies two cancellation laws:</p>
+<ul>
+<li>If <span class="math inline">\(f \circ h = f \circ k\)</span>, then <span class="math inline">\(h = k\)</span>.</li>
+<li>If <span class="math inline">\(h \circ f = k \circ f\)</span>, then <span class="math inline">\(h = k\)</span>.</li>
+</ul>
+<p>Let prove the first one. We assume that <span class="math inline">\(f\)</span> has an inverse and that <span class="math inline">\(f \circ h = f \circ k\)</span> and we try to show that <span class="math inline">\(h = k\)</span>. Since <span class="math inline">\(f \circ h\)</span> and <span class="math inline">\(f \circ k\)</span> are the same map, <span class="math inline">\(f^{-1} \circ (f \circ h)\)</span> and <span class="math inline">\(f^{-1} \circ (f \circ k)\)</span> are also the same. But now we can use the rules we already know:</p>
+<p><span class="math display">\[f^{-1} \circ (f \circ h) = f^{-1} \circ (f \circ k)\]</span> <span class="math display">\[(f^{-1} \circ f) \circ h = (f^{-1} \circ f) \circ k\]</span> <span class="math display">\[1_\text{A} \circ h = 1_\text{A} \circ k\]</span> <span class="math display">\[h = k\]</span></p>
+<h2 id="sections-and-retractions">Sections and retractions</h2>
+<p>Let’s give names to some special relations of maps that will be very useful to us later. If <span class="math inline">\(A \xrightarrow{f} B\)</span>, then</p>
+<ul>
+<li><p>a <strong>retraction</strong> for <span class="math inline">\(f\)</span> is a map <span class="math inline">\(B \xrightarrow{r} A\)</span> for which <span class="math inline">\(r \circ  f = 1_\text{A}\)</span>;</p></li>
+<li><p>a <strong>section</strong> for <span class="math inline">\(f\)</span> is a map <span class="math inline">\(B \xrightarrow{s} A\)</span> for which <span class="math inline">\(f \circ s  = 1_\text{B}\)</span>.</p></li>
+</ul>
+<p>First thing to note is that we cannot say that some map <span class="math inline">\(r\)</span> is a retraction <em>by itself</em>, it only makes sense to say that <span class="math inline">\(r\)</span> is retraction for another map <span class="math inline">\(f\)</span>. The same for sections. So if we have <span class="math inline">\(r \circ s = 1_\text{A}\)</span>, then <span class="math inline">\(r\)</span> is retraction for <span class="math inline">\(s\)</span> and <span class="math inline">\(s\)</span> is section for <span class="math inline">\(r\)</span>.</p>
+<p>Useful mnemonics for retraction is that it retracts values “back from where they come”. While the name “section” is a little trickier.</p>
+<p>We can think of a section <span class="math inline">\(B \xrightarrow{s} A\)</span> as a way to select a “B-section” in a (possibly) bigger object <span class="math inline">\(A\)</span>:</p>
+<div class="figure">
+<img src="../img/ct1-05.svg" alt="Internal diagram with a section" />
+<p class="caption">Internal diagram with a section</p>
+</div>
+<p>This picture also shows an important idea that in order for <span class="math inline">\(f\)</span> to have a section, its domain <span class="math inline">\(A\)</span> should be at least as big as codomain <span class="math inline">\(B\)</span>, not smaller. (Make sure that this makes sense to you now, imagine <span class="math inline">\(A\)</span> having only two dots in it and try to travel from dots in <span class="math inline">\(B\)</span> to values in <span class="math inline">\(A\)</span> and back arriving to the same dots — that’s impossible.)</p>
+<p>On the other hand, for <span class="math inline">\(f\)</span> to have a retraction, its codomain <span class="math inline">\(B\)</span> should be at least as big as its domain <span class="math inline">\(A\)</span> (the logic is exactly the same, so I won’t repeat it here).</p>
+<h2 id="monomorphism-and-epimorphism">Monomorphism and epimorphism</h2>
+<p><em>Suppose a map <span class="math inline">\(A \xrightarrow{f} B\)</span> has a retraction. Then for any set <span class="math inline">\(T\)</span> and for any pair of maps <span class="math inline">\(T \xrightarrow{x_\text{1}} A\)</span>, <span class="math inline">\(T \xrightarrow{x_\text{2}} A\)</span> from <span class="math inline">\(T\)</span> to <span class="math inline">\(A\)</span></em></p>
+<p><span class="math display">\[\text{if } f \circ x_\text{1} = f \circ x_\text{2} \text{ then } x_\text{1} = x_\text{2}\]</span></p>
+<p><strong>Proof:</strong> Looking at the definition, we see that the assumption means that we have a map <span class="math inline">\(r\)</span> for which <span class="math inline">\(r \circ f = 1_\text{A}\)</span>. Using the assumption that <span class="math inline">\(x_\text{1}\)</span> and <span class="math inline">\(x_\text{2}\)</span> are such that f composes with them to get the same <span class="math inline">\(T \to B\)</span>, we can compose further with <span class="math inline">\(r\)</span> as follows:</p>
+<div class="figure">
+<img src="../img/ct1-06.svg" alt="Injective map" />
+<p class="caption">Injective map</p>
+</div>
+<p><span class="math display">\[x_\text{1} = 1_\text{A} \circ x_\text{1} = (r \circ f) \circ x_\text{1} = r \circ (f \circ x_\text{1}) = r \circ (f \circ x_\text{2}) \]</span> <span class="math display">\[= (r \circ f) \circ x_\text{2} = 1_\text{A} \circ x_\text{2} = x_\text{2}\]</span></p>
+<p><strong>Definitions:</strong> <em>A map <span class="math inline">\(f\)</span> satisfying the conclusion “for any pair of maps <span class="math inline">\(T \xrightarrow{x_\text{1}} A\)</span> and <span class="math inline">\(T \xrightarrow{x_\text{2}} A\)</span>, if <span class="math inline">\(f \circ x_\text{1} = f \circ x_\text{2}\)</span> then <span class="math inline">\(x_\text{1} = x_\text{2}\)</span>” is said to be <strong>injective for maps from</strong> <span class="math inline">\(T\)</span>.</em></p>
+<p><em>If <span class="math inline">\(f\)</span> is injective for maps from <span class="math inline">\(T\)</span> for every <span class="math inline">\(T\)</span>, one says that <span class="math inline">\(f\)</span> is <strong>injective</strong>, or is a <strong>monomorphism</strong>.</em></p>
+<p>What does all this stuff mean anyway? Simply put, if you can “cancel” <span class="math inline">\(f\)</span> by having a way (retraction) to go back, then when you apply <span class="math inline">\(f\)</span> after other maps and get the same results, then those maps are the same. I.e. you can cancel application of <span class="math inline">\(f\)</span> and tell if we were given the same maps or different ones. <em>After application of <span class="math inline">\(f\)</span> we can still reason of what happened before the application.</em> That’s the cancellation.</p>
+<p>For example, when GHC gets into a situation when it has only result of type-level function application, but it needs to figure out what argument of that function was, it complains that the type-level function may be not injective. Fair enough! (In GHC 8.0, there is a way to annotate type-level functions telling that they are injective.)</p>
+<p>Remember that if <span class="math inline">\(f\)</span> has a retraction, then <span class="math inline">\(f\)</span> satisfies the cancelation law:</p>
+<ul>
+<li>If <span class="math inline">\(f \circ h = f \circ k\)</span>, then <span class="math inline">\(h = k\)</span>.</li>
+</ul>
+<p>And if <span class="math inline">\(f\)</span> has a section, then <span class="math inline">\(f\)</span> satisfies another cancelation law:</p>
+<ul>
+<li>If <span class="math inline">\(h \circ f = k \circ f\)</span>, then <span class="math inline">\(h = k\)</span>.</li>
+</ul>
+<p>(We talked about <span class="math inline">\(f\)</span> having an inverse, but if <span class="math inline">\(f\)</span> as an inverse, then it happens to be <em>both retraction and section for <span class="math inline">\(f\)</span></em>, we will prove this later in the post.)</p>
+<p><em>Suppose a map <span class="math inline">\(A \xrightarrow{f} B\)</span> has a section. Then for any set <span class="math inline">\(T\)</span> and any pair of maps <span class="math inline">\(B \xrightarrow{t_\text{1}} T\)</span>, <span class="math inline">\(B \xrightarrow{t_\text{2}} T\)</span> from <span class="math inline">\(B\)</span> to <span class="math inline">\(T\)</span></em></p>
+<p><span class="math display">\[\text{if } t_\text{1} \circ f = t_\text{2} \circ f \text{ then } t_\text{1} = t_\text{2}\]</span></p>
+<p><strong>Definition:</strong> <em>A map <span class="math inline">\(f\)</span> with this cancellation property (if <span class="math inline">\(t_\text{1} \circ f = t_\text{2} \circ f\)</span> then <span class="math inline">\(t_\text{1}=t_\text{2}\)</span>) for every <span class="math inline">\(T\)</span> is called <strong>epimorphism</strong>.</em></p>
+<p>What happens here? Now we apply <span class="math inline">\(f\)</span> <em>before</em> some maps <span class="math inline">\(t_\text{1}\)</span> and <span class="math inline">\(t_\text{2}\)</span>, and we conclude that if the results we get are the same, then those <span class="math inline">\(t_\text{1}\)</span> and <span class="math inline">\(t_\text{2}\)</span> are also the same. Intuitively, given a value <span class="math inline">\(b\)</span> from <span class="math inline">\(B\)</span> that goes as an input to <span class="math inline">\(t_\text{1}\)</span> and <span class="math inline">\(t_\text{2}\)</span>, we should be able to “cancel” previous application of <span class="math inline">\(f\)</span> and tell which values <span class="math inline">\(a\)</span> from <span class="math inline">\(A\)</span> was given to <span class="math inline">\(f\)</span> so that it produced that particular <span class="math inline">\(b\)</span>. The condition that <span class="math inline">\(f\)</span> has a section is exactly the condition that there is a way to go from values from <span class="math inline">\(B\)</span> (result of <span class="math inline">\(f\)</span>) “back” to values from <span class="math inline">\(A\)</span> (inputs for <span class="math inline">\(f\)</span>). Note however that <span class="math inline">\(A\)</span> may be “bigger” than <span class="math inline">\(B\)</span> and the condition does not forbid <span class="math inline">\(A\)</span> from having several <span class="math inline">\(a\)</span> going to the same <span class="math inline">\(b\)</span>.</p>
+<h2 id="composing-sections-and-retractions">Composing sections and retractions</h2>
+<p>Now we are going to consider two really simple propositions.</p>
+<p><strong>Proposition:</strong> *If <span class="math inline">\(A \xrightarrow{f} B\)</span> has a retraction and if <span class="math inline">\(B \xrightarrow{g} C\)</span> has a retraction, then <span class="math inline">\(A \xrightarrow{g \circ f} C\)</span> has a retraction.</p>
+<p><strong>Proof:</strong> Let <span class="math inline">\(r_\text{1} \circ f = 1_\text{A}\)</span> and <span class="math inline">\(r_\text{2} \circ g = 1_\text{B}\)</span>. Then a good guess for a retraction of the composite would be the composite of the retractions <em>in the opposite order</em> (which is anyway the only order in which they can be composed).</p>
+<div class="figure">
+<img src="../img/ct1-07.svg" alt="Composition of retractions" />
+<p class="caption">Composition of retractions</p>
+</div>
+<p>Using familiar tricks:</p>
+<p><span class="math display">\[r \circ (g \circ f) = (r_\text{1} \circ r_\text{2}) \circ (g \circ f) = r_\text{1} \circ (r_\text{2} \circ g) \circ f = r_\text{1} \circ 1_\text{B} \circ f\]</span> <span class="math display">\[= r_\text{1} \circ f = 1_\text{A}\]</span></p>
+<p>This proves that <span class="math inline">\(r\)</span> is a retraction for <span class="math inline">\(g \circ f\)</span>.</p>
+<p>Proving that the composite of two maps each having sections, has itself a section is left as an exercise for the reader.</p>
+<h2 id="theorem-of-uniqueness-of-inverses">Theorem of uniqueness of inverses</h2>
+<p><strong>Theorem (uniqueness of inverses)</strong>: <em>If <span class="math inline">\(f\)</span> has both a retraction <span class="math inline">\(r\)</span> and a section <span class="math inline">\(s\)</span>, then <span class="math inline">\(r = s\)</span></em>.</p>
+<p><strong>Proof:</strong> From the definition we have, if <span class="math inline">\(A \xrightarrow{f} B\)</span>, both of the equations</p>
+<p><span class="math display">\[r \circ f = 1_\text{A} \text{ and } f \circ s = 1_\text{B}\]</span></p>
+<p>Then by identity and associative law</p>
+<p><span class="math display">\[r = r \circ 1_\text{B} = r \circ (f \circ s) = (r \circ f) \circ s = 1_\text{A} \circ s = s\]</span></p>
+<h2 id="another-definition-of-isomorphism-automorphism">Another definition of isomorphism, automorphism</h2>
+<p>Using the notions of “section” and “retraction” we can rephrase the definition of “isomorphism”.</p>
+<p><strong>Definitions:</strong> <em>A map <span class="math inline">\(f\)</span> is called an <strong>isomorphism</strong> if there exists another map <span class="math inline">\(f^{-1}\)</span> which is both a retraction and a section for <span class="math inline">\(f\)</span></em>:</p>
+<p><span class="math display">\[A \xrightarrow{f} B, f \circ f^{-1} = 1_\text{B}\]</span> <span class="math display">\[A \xleftarrow{f^{-1}} B, f^{-1} \circ f = 1_\text{A}\]</span></p>
+<p><em>Such a map <span class="math inline">\(f^{-1}\)</span> is called <strong>the inverse map for</strong> <span class="math inline">\(f\)</span>; since both of the two equations are required, the theorem of uniqueness of inverses shows that there is only one inverse.</em></p>
+<p><strong>Definition:</strong> <em>A map that is an endomap and at the same time an isomorphism is usually called by the one word <strong>automorphism</strong>.</em></p>
+<hr />
+<p>To be continued…</p>
+
+    </div>
+    <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_CHTML"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/3.1.0/anchor.min.js"></script>
+    <script src="../js/put-anchors.js"></script>
+    <footer>
+      <a href="#top">top</a>
+    </footer>
+
+  </body>
+</html>

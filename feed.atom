@@ -8,8 +8,16 @@
         <name>Mark Karpov</name>
         <email>markkarpov@opmbx.org</email>
     </author>
-    <updated>2016-05-28T00:00:00Z</updated>
+    <updated>2016-09-18T00:00:00Z</updated>
     <entry>
+    <title>Category Theory Basics, Part I</title>
+    <link href="https://mrkkrp.github.com/posts/category-theory-part-1.html" />
+    <id>https://mrkkrp.github.com/posts/category-theory-part-1.html</id>
+    <published>2016-09-18T00:00:00Z</published>
+    <updated>2016-09-18T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Category theory notions in simple to understand (I hope), but concise form, part I.]]></summary>
+</entry>
+<entry>
     <title>The Identicon package</title>
     <link href="https://mrkkrp.github.com/posts/the-identicon-package.html" />
     <id>https://mrkkrp.github.com/posts/the-identicon-package.html</id>
