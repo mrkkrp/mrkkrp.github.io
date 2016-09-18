@@ -2,7 +2,7 @@
 title: Category Theory Basics, Part I
 author: Mark Karpov
 description: Category theory notions in simple to understand (I hope), but concise form, part I.
-published: September 11, 2016
+published: September 18, 2016
 ---
 
 When you do Haskell on daily basis (simply put, earn a living writing
@@ -54,14 +54,15 @@ on. The main definition is of course **category** itself. Category is
 defined by **objects** and **maps** (synonyms: *arrows*, *morphisms*,
 *functions*, *transformations*). There are also a few laws that should hold
 for the objects and maps in order to form a category, but we will get to
-them.
+them a bit later.
 
 **Objects** can be pretty much everything. The simplest and most intuitive
 object is probably *finite set* (just a collection of things), and it will
-be discussed in the next section. It's worth noticing that objects in a
-category may have additional structure or properties associated with them,
-and they should not “lose” the properties when we work within one category
-(makes sense, otherwise we would kind of “walk” outside of category).
+be discussed in the next section. The term rather means type of something,
+not particular value. It's worth noticing that objects in a category may
+have additional structure or properties associated with them, and they
+should not “lose” the properties when we work within one category (makes
+sense, otherwise we would kind of “walk” outside of category).
 
 **Maps** have **domain** (an object), **codomain** (an object again), and a
 rule assigning to each element $a$ in the domain, an element $b$ in the
@@ -135,6 +136,9 @@ of an identity map (taken from the book, like the pictures above):
 
 The $1_\text{A}$ notation will make more sense once we learn about
 *composition of maps* in the next section.
+
+**Definition:** *An endomap $e$ is called **idempotent** if $e \circ e =
+e$.*
 
 ## Composition
 
@@ -271,8 +275,8 @@ $$h = k$$
 
 ## Sections and retractions
 
-Let's give names to some special maps that will be very useful to us later.
-If $A \xrightarrow{f} B$, then
+Let's give names to some special relations of maps that will be very useful
+to us later. If $A \xrightarrow{f} B$, then
 
 * a **retraction** for $f$ is a map $B \xrightarrow{r} A$ for which $r \circ
   f = 1_\text{A}$;
@@ -280,29 +284,127 @@ If $A \xrightarrow{f} B$, then
 * a **section** for $f$ is a map $B \xrightarrow{s} A$ for which $f \circ s
   = 1_\text{B}$.
 
-First thing to note is that we cannot say that some map $r$ is retraction
+First thing to note is that we cannot say that some map $r$ is a retraction
 *by itself*, it only makes sense to say that $r$ is retraction for another
-map $f$. The same for sections.
+map $f$. The same for sections. So if we have $r \circ s = 1_\text{A}$, then
+$r$ is retraction for $s$ and $s$ is section for $r$.
 
 Useful mnemonics for retraction is that it retracts values “back from where
 they come”. While the name “section” is a little trickier.
 
-TODO explain why we call it “section”
+We can think of a section $B \xrightarrow{s} A$ as a way to select a
+“B-section” in a (possibly) bigger object $A$:
 
-Note that if we have $r \circ s = 1_\text{A}$, then $r$ is retraction for
-$s$ and $s$ is section for $r$.
+![Internal diagram with a section](/img/ct1-05.svg)
 
-## Composing sections and retractions
+This picture also shows an important idea that in order for $f$ to have a
+section, its domain $A$ should be at least as big as codomain $B$, not
+smaller. (Make sure that this makes sense to you now, imagine $A$ having
+only two dots in it and try to travel from dots in $B$ to values in $A$ and
+back arriving to the same dots — that's impossible.)
 
-…
+On the other hand, for $f$ to have a retraction, its codomain $B$ should be
+at least as big as its domain $A$ (the logic is exactly the same, so I won't
+repeat it here).
 
 ## Monomorphism and epimorphism
 
-…
+*Suppose a map $A \xrightarrow{f} B$ has a retraction. Then for any set $T$
+and for any pair of maps $T \xrightarrow{x_\text{1}} A$, $T
+\xrightarrow{x_\text{2}} A$ from $T$ to $A$*
 
-## Idempotents
+$$\text{if } f \circ x_\text{1} = f \circ x_\text{2} \text{ then } x_\text{1} = x_\text{2}$$
 
-**Definition:** *An endomap $e$ is called **idempotent** if $e \circ e = e$.*
+**Proof:** Looking at the definition, we see that the assumption means that
+we have a map $r$ for which $r \circ f = 1_\text{A}$. Using the assumption
+that $x_\text{1}$ and $x_\text{2}$ are such that f composes with them to get
+the same $T \to B$, we can compose further with $r$ as follows:
+
+![Injective map](/img/ct1-06.svg)
+
+$$x_\text{1} = 1_\text{A} \circ x_\text{1} = (r \circ f) \circ x_\text{1} = r \circ (f \circ x_\text{1}) = r \circ (f \circ x_\text{2}) $$
+$$= (r \circ f) \circ x_\text{2} = 1_\text{A} \circ x_\text{2} = x_\text{2}$$
+
+**Definitions:** *A map $f$ satisfying the conclusion “for any pair of maps
+$T \xrightarrow{x_\text{1}} A$ and $T \xrightarrow{x_\text{2}} A$, if $f
+\circ x_\text{1} = f \circ x_\text{2}$ then $x_\text{1} = x_\text{2}$” is
+said to be **injective for maps from** $T$.*
+
+*If $f$ is injective for maps from $T$ for every $T$, one says that $f$ is
+**injective**, or is a **monomorphism**.*
+
+What does all this stuff mean anyway? Simply put, if you can “cancel” $f$ by
+having a way (retraction) to go back, then when you apply $f$ after other
+maps and get the same results, then those maps are the same. I.e. you can
+cancel application of $f$ and tell if we were given the same maps or
+different ones. *After application of $f$ we can still reason of what
+happened before the application.* That's the cancellation.
+
+For example, when GHC gets into a situation when it has only result of
+type-level function application, but it needs to figure out what argument of
+that function was, it complains that the type-level function may be not
+injective. Fair enough! (In GHC 8.0, there is a way to annotate type-level
+functions telling that they are injective.)
+
+Remember that if $f$ has a retraction, then $f$ satisfies the cancelation
+law:
+
+* If $f \circ h = f \circ k$, then $h = k$.
+
+And if $f$ has a section, then $f$ satisfies another cancelation law:
+
+* If $h \circ f = k \circ f$, then $h = k$.
+
+(We talked about $f$ having an inverse, but if $f$ as an inverse, then it
+happens to be *both retraction and section for $f$*, we will prove this
+later in the post.)
+
+*Suppose a map $A \xrightarrow{f} B$ has a section. Then for any set $T$ and
+any pair of maps $B \xrightarrow{t_\text{1}} T$, $B \xrightarrow{t_\text{2}}
+T$ from $B$ to $T$*
+
+$$\text{if } t_\text{1} \circ f = t_\text{2} \circ f \text{ then } t_\text{1} = t_\text{2}$$
+
+**Definition:** *A map $f$ with this cancellation property (if $t_\text{1}
+\circ f = t_\text{2} \circ f$ then $t_\text{1}=t_\text{2}$) for every $T$ is
+called **epimorphism**.*
+
+What happens here? Now we apply $f$ *before* some maps $t_\text{1}$ and
+$t_\text{2}$, and we conclude that if the results we get are the same, then
+those $t_\text{1}$ and $t_\text{2}$ are also the same. Intuitively, given a
+value $b$ from $B$ that goes as an input to $t_\text{1}$ and $t_\text{2}$,
+we should be able to “cancel” previous application of $f$ and tell which
+values $a$ from $A$ was given to $f$ so that it produced that particular
+$b$. The condition that $f$ has a section is exactly the condition that
+there is a way to go from values from $B$ (result of $f$) “back” to values
+from $A$ (inputs for $f$). Note however that $A$ may be “bigger” than $B$
+and the condition does not forbid $A$ from having several $a$ going to the
+same $b$.
+
+## Composing sections and retractions
+
+Now we are going to consider two really simple propositions.
+
+**Proposition:** *If $A \xrightarrow{f} B$ has a retraction and if $B
+\xrightarrow{g} C$ has a retraction, then $A \xrightarrow{g \circ f} C$ has
+a retraction.
+
+**Proof:** Let $r_\text{1} \circ f = 1_\text{A}$ and $r_\text{2} \circ g =
+1_\text{B}$. Then a good guess for a retraction of the composite would be
+the composite of the retractions *in the opposite order* (which is anyway
+the only order in which they can be composed).
+
+![Composition of retractions](/img/ct1-07.svg)
+
+Using familiar tricks:
+
+$$r \circ (g \circ f) = (r_\text{1} \circ r_\text{2}) \circ (g \circ f) = r_\text{1} \circ (r_\text{2} \circ g) \circ f = r_\text{1} \circ 1_\text{B} \circ f$$
+$$= r_\text{1} \circ f = 1_\text{A}$$
+
+This proves that $r$ is a retraction for $g \circ f$.
+
+Proving that the composite of two maps each having sections, has itself a
+section is left as an exercise for the reader.
 
 ## Theorem of uniqueness of inverses
 
@@ -333,13 +435,9 @@ $$A \xleftarrow{f^{-1}} B, f^{-1} \circ f = 1_\text{A}$$
 the two equations are required, the theorem of uniqueness of inverses shows
 that there is only one inverse.*
 
-A map that is an endomap and at the same time an isomorphism is usually
-called by the one word *automorphism*.
+**Definition:** *A map that is an endomap and at the same time an isomorphism is usually
+called by the one word **automorphism**.*
 
-## Determination and choice problems
+----
 
-…
-
-## Existence of sections and retractions
-
-…
+To be continued…
