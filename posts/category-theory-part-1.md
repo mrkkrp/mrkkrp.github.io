@@ -374,12 +374,11 @@ $t_\text{2}$, and we conclude that if the results we get are the same, then
 those $t_\text{1}$ and $t_\text{2}$ are also the same. Intuitively, given a
 value $b$ from $B$ that goes as an input to $t_\text{1}$ and $t_\text{2}$,
 we should be able to “cancel” previous application of $f$ and tell which
-values $a$ from $A$ was given to $f$ so that it produced that particular
-$b$. The condition that $f$ has a section is exactly the condition that
-there is a way to go from values from $B$ (result of $f$) “back” to values
-from $A$ (inputs for $f$). Note however that $A$ may be “bigger” than $B$
-and the condition does not forbid $A$ from having several $a$ going to the
-same $b$.
+value $a$ from $A$ was given to $f$ so that it produced that particular $b$.
+The condition that $f$ has a section is exactly the condition that there is
+a way to go from values from $B$ (result of $f$) “back” to values from $A$
+(inputs for $f$). Note however that $A$ may be “bigger” than $B$ and the
+condition does not forbid $A$ from having several $a$ going to the same $b$.
 
 ## Composing sections and retractions
 
@@ -387,7 +386,7 @@ Now we are going to consider two really simple propositions.
 
 **Proposition:** *If $A \xrightarrow{f} B$ has a retraction and if $B
 \xrightarrow{g} C$ has a retraction, then $A \xrightarrow{g \circ f} C$ has
-a retraction.
+a retraction.*
 
 **Proof:** Let $r_\text{1} \circ f = 1_\text{A}$ and $r_\text{2} \circ g =
 1_\text{B}$. Then a good guess for a retraction of the composite would be
