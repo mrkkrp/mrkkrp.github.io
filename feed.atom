@@ -8,16 +8,8 @@
         <name>Mark Karpov</name>
         <email>markkarpov@opmbx.org</email>
     </author>
-    <updated>2016-11-16T00:00:00Z</updated>
+    <updated>2016-09-18T00:00:00Z</updated>
     <entry>
-    <title>Why Lisp Sucks So Badly</title>
-    <link href="https://mrkkrp.github.com/posts/why-lisp-sucks-so-badly.html" />
-    <id>https://mrkkrp.github.com/posts/why-lisp-sucks-so-badly.html</id>
-    <published>2016-11-16T00:00:00Z</published>
-    <updated>2016-11-16T00:00:00Z</updated>
-    <summary type="html"><![CDATA[There must be a reason why Lisp sucks so badly.]]></summary>
-</entry>
-<entry>
     <title>Category Theory Basics, Part I</title>
     <link href="https://mrkkrp.github.com/posts/category-theory-part-1.html" />
     <id>https://mrkkrp.github.com/posts/category-theory-part-1.html</id>
