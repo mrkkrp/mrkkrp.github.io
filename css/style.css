@@ -30,6 +30,10 @@ code {
     font-size: 14px;
 }
 
+h2 > code {
+    font-size: 22px;
+}
+
 .sourceCode {
     font-size: 14px;
 }

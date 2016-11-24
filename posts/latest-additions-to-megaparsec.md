@@ -12,7 +12,7 @@ isn't obvious how useful they are.
 
 ## The `observing` primitive
 
-This is a new method in the `MonadPasec` type class (added in 5.1.0), which
+This is a new method in the `MonadParsec` type class (added in 5.1.0), which
 looks like this:
 
 ```haskell
