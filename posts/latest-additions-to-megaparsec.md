@@ -16,7 +16,7 @@ This is a new method in the `MonadParsec` type class (added in 5.1.0), which
 looks like this:
 
 ```haskell
-observing :: MonadPasrec e s m => m a -> m (Either (ParseError (Token s) e) a)
+observing :: MonadParsec e s m => m a -> m (Either (ParseError (Token s) e) a)
 ```
 
 As you may have guessed from the signature alone, it allows to “observe”
