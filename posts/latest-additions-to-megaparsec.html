@@ -139,7 +139,7 @@ in foo, in bar</code></pre>
         prs  eol s' <span class="ot">`shouldParse`</span>     <span class="st">&quot;\n&quot;</span>
         prs' eol s' <span class="ot">`succeedsLeaving`</span> s
   context <span class="st">&quot;when stream begins with CRLF sequence&quot;</span> <span class="fu">$</span>
-    it <span class="st">&quot;parses the CSRF sequence&quot;</span> <span class="fu">$</span>
+    it <span class="st">&quot;parses the CRLF sequence&quot;</span> <span class="fu">$</span>
       property <span class="fu">$</span> \s <span class="ot">-&gt;</span> <span class="kw">do</span>
         <span class="kw">let</span> s' <span class="fu">=</span> <span class="ch">'\r'</span> <span class="fu">:</span> <span class="ch">'\n'</span> <span class="fu">:</span> s
         prs  eol s' <span class="ot">`shouldParse`</span>     <span class="st">&quot;\r\n&quot;</span>
@@ -161,7 +161,7 @@ context <span class="st">&quot;when input stream is '\\r'&quot;</span> <span cla
   it <span class="st">&quot;signals correct parse error&quot;</span> <span class="fu">$</span>
     prs eol <span class="st">&quot;\r&quot;</span> <span class="ot">`shouldFailWith`</span> err posI
       (utok <span class="ch">'\r'</span> <span class="fu">&lt;&gt;</span> elabel <span class="st">&quot;end of line&quot;</span>)
-context <span class="st">&quot;when stream does not begin with newline or CSRF sequence&quot;</span> <span class="fu">$</span>
+context <span class="st">&quot;when stream does not begin with newline or CRLF sequence&quot;</span> <span class="fu">$</span>
   it <span class="st">&quot;signals correct parse error&quot;</span> <span class="fu">$</span>
     property <span class="fu">$</span> \ch s <span class="ot">-&gt;</span> (ch <span class="ot">`notElem`</span> <span class="st">&quot;\r\n&quot;</span>) <span class="fu">==&gt;</span> <span class="kw">do</span>
       <span class="kw">let</span> s' <span class="fu">=</span> ch <span class="fu">:</span> s
