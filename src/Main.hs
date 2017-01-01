@@ -1,7 +1,7 @@
 --
 -- Mark Karpov's personal blog.
 --
--- Copyright © 2015 Mark Karpov
+-- Copyright © 2015–2017 Mark Karpov
 
 {-# LANGUAGE OverloadedStrings #-}
 
