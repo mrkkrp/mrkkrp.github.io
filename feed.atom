@@ -8,8 +8,16 @@
         <name>Mark Karpov</name>
         <email>markkarpov@opmbx.org</email>
     </author>
-    <updated>2016-11-24T00:00:00Z</updated>
+    <updated>2017-05-02T00:00:00Z</updated>
     <entry>
+    <title>Putting together a form validation library</title>
+    <link href="https://mrkkrp.github.com/posts/putting-together-a-form-validation-library.html" />
+    <id>https://mrkkrp.github.com/posts/putting-together-a-form-validation-library.html</id>
+    <published>2017-05-02T00:00:00Z</published>
+    <updated>2017-05-02T00:00:00Z</updated>
+    <summary type="html"><![CDATA[A write-up about motivation and design of the forma library]]></summary>
+</entry>
+<entry>
     <title>Latest additions to Megaparsec</title>
     <link href="https://mrkkrp.github.com/posts/latest-additions-to-megaparsec.html" />
     <id>https://mrkkrp.github.com/posts/latest-additions-to-megaparsec.html</id>

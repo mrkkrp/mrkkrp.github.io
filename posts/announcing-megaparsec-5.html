@@ -103,13 +103,13 @@
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Ord</span> e <span class="ot">=&gt;</span> <span class="dt">ErrorComponent</span> e <span class="kw">where</span>
 
   <span class="co">-- | Represent message passed to 'fail' in parser monad.</span>
-  <span class="fu">--</span>
+  <span class="co">--</span>
   <span class="co">-- @since 5.0.0</span>
 
 <span class="ot">  representFail ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> e
 
   <span class="co">-- | Represent information about incorrect indentation.</span>
-  <span class="fu">--</span>
+  <span class="co">--</span>
   <span class="co">-- @since 5.0.0</span>
 
   representIndentation
@@ -152,7 +152,7 @@ incorrect indentation (got 2, should be equal to 3)
 <div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Ord</span> (<span class="dt">Token</span> s) <span class="ot">=&gt;</span> <span class="dt">Stream</span> s <span class="kw">where</span>
 
   <span class="co">-- | Type of token in stream.</span>
-  <span class="fu">--</span>
+  <span class="co">--</span>
   <span class="co">-- @since 5.0.0</span>
 
   <span class="kw">type</span> <span class="dt">Token</span><span class="ot"> s ::</span> <span class="fu">*</span>
@@ -199,16 +199,16 @@ newline <span class="fu">=</span> char <span class="ch">'\n'</span></code></pre>
 <span class="co">-- callback that receives custom space-consuming parser as argument. This</span>
 <span class="co">-- parser should be used after separate components of line fold that can be</span>
 <span class="co">-- put on different lines.</span>
-<span class="fu">--</span>
+<span class="co">--</span>
 <span class="co">-- An example should clarify the usage pattern:</span>
-<span class="fu">--</span>
+<span class="co">--</span>
 <span class="co">-- &gt; sc = L.space (void spaceChar) empty empty</span>
 <span class="co">-- &gt;</span>
 <span class="co">-- &gt; myFold = L.lineFold sc $ \sc' -&gt; do</span>
 <span class="co">-- &gt;   L.symbol sc' &quot;foo&quot;</span>
 <span class="co">-- &gt;   L.symbol sc' &quot;bar&quot;</span>
 <span class="co">-- &gt;   L.symbol sc  &quot;baz&quot; -- for the last symbol we use normal space consumer</span>
-<span class="fu">--</span>
+<span class="co">--</span>
 <span class="co">-- @since 5.0.0</span>
 
 <span class="ot">lineFold ::</span> <span class="dt">MonadParsec</span> e s m
