@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
     <title>Mark Karpov's Blog</title>
-    <link href="https://mrkkrp.github.com/feed.atom" rel="self" />
-    <link href="https://mrkkrp.github.com" />
-    <id>https://mrkkrp.github.com/feed.atom</id>
+    <link href="https://mrkkrp.github.io/feed.atom" rel="self" />
+    <link href="https://mrkkrp.github.io" />
+    <id>https://mrkkrp.github.io/feed.atom</id>
     <author>
         <name>Mark Karpov</name>
         <email>markkarpov@opmbx.org</email>
@@ -11,64 +11,64 @@
     <updated>2017-05-02T00:00:00Z</updated>
     <entry>
     <title>Putting together a form validation library</title>
-    <link href="https://mrkkrp.github.com/posts/putting-together-a-form-validation-library.html" />
-    <id>https://mrkkrp.github.com/posts/putting-together-a-form-validation-library.html</id>
+    <link href="https://mrkkrp.github.io/posts/putting-together-a-form-validation-library.html" />
+    <id>https://mrkkrp.github.io/posts/putting-together-a-form-validation-library.html</id>
     <published>2017-05-02T00:00:00Z</published>
     <updated>2017-05-02T00:00:00Z</updated>
     <summary type="html"><![CDATA[A write-up about motivation and design of the forma library]]></summary>
 </entry>
 <entry>
     <title>Latest additions to Megaparsec</title>
-    <link href="https://mrkkrp.github.com/posts/latest-additions-to-megaparsec.html" />
-    <id>https://mrkkrp.github.com/posts/latest-additions-to-megaparsec.html</id>
+    <link href="https://mrkkrp.github.io/posts/latest-additions-to-megaparsec.html" />
+    <id>https://mrkkrp.github.io/posts/latest-additions-to-megaparsec.html</id>
     <published>2016-11-24T00:00:00Z</published>
     <updated>2016-11-24T00:00:00Z</updated>
     <summary type="html"><![CDATA[This blog post summarizes new features added to Megaparsec in the second half of 2016.]]></summary>
 </entry>
 <entry>
     <title>Category Theory Basics, Part I</title>
-    <link href="https://mrkkrp.github.com/posts/category-theory-part-1.html" />
-    <id>https://mrkkrp.github.com/posts/category-theory-part-1.html</id>
+    <link href="https://mrkkrp.github.io/posts/category-theory-part-1.html" />
+    <id>https://mrkkrp.github.io/posts/category-theory-part-1.html</id>
     <published>2016-09-18T00:00:00Z</published>
     <updated>2016-09-18T00:00:00Z</updated>
     <summary type="html"><![CDATA[Category theory notions in simple to understand (I hope), but concise form, part I.]]></summary>
 </entry>
 <entry>
     <title>The Identicon package</title>
-    <link href="https://mrkkrp.github.com/posts/the-identicon-package.html" />
-    <id>https://mrkkrp.github.com/posts/the-identicon-package.html</id>
+    <link href="https://mrkkrp.github.io/posts/the-identicon-package.html" />
+    <id>https://mrkkrp.github.io/posts/the-identicon-package.html</id>
     <published>2016-05-28T00:00:00Z</published>
     <updated>2016-05-28T00:00:00Z</updated>
     <summary type="html"><![CDATA[My new Identicon package for identicon generation]]></summary>
 </entry>
 <entry>
     <title>Announcing Megaparsec 5</title>
-    <link href="https://mrkkrp.github.com/posts/announcing-megaparsec-5.html" />
-    <id>https://mrkkrp.github.com/posts/announcing-megaparsec-5.html</id>
+    <link href="https://mrkkrp.github.io/posts/announcing-megaparsec-5.html" />
+    <id>https://mrkkrp.github.io/posts/announcing-megaparsec-5.html</id>
     <published>2016-05-15T00:00:00Z</published>
     <updated>2016-05-15T00:00:00Z</updated>
     <summary type="html"><![CDATA[Finally Megaparsec 5 is out, what's new?]]></summary>
 </entry>
 <entry>
     <title>The true power of Dvorak</title>
-    <link href="https://mrkkrp.github.com/posts/dvorak-rocks.html" />
-    <id>https://mrkkrp.github.com/posts/dvorak-rocks.html</id>
+    <link href="https://mrkkrp.github.io/posts/dvorak-rocks.html" />
+    <id>https://mrkkrp.github.io/posts/dvorak-rocks.html</id>
     <published>2016-03-15T00:00:00Z</published>
     <updated>2016-03-15T00:00:00Z</updated>
     <summary type="html"><![CDATA[My experience with the Dvorak layout]]></summary>
 </entry>
 <entry>
     <title>Megaparsec 4 and 5</title>
-    <link href="https://mrkkrp.github.com/posts/megaparsec-4-and-5.html" />
-    <id>https://mrkkrp.github.com/posts/megaparsec-4-and-5.html</id>
+    <link href="https://mrkkrp.github.io/posts/megaparsec-4-and-5.html" />
+    <id>https://mrkkrp.github.io/posts/megaparsec-4-and-5.html</id>
     <published>2016-02-23T00:00:00Z</published>
     <updated>2016-02-23T00:00:00Z</updated>
     <summary type="html"><![CDATA[What we have achieved with version 4 of Megaparsec and what is planned in version 5.]]></summary>
 </entry>
 <entry>
     <title>Lisp and Haskell</title>
-    <link href="https://mrkkrp.github.com/posts/lisp-and-haskell.html" />
-    <id>https://mrkkrp.github.com/posts/lisp-and-haskell.html</id>
+    <link href="https://mrkkrp.github.io/posts/lisp-and-haskell.html" />
+    <id>https://mrkkrp.github.io/posts/lisp-and-haskell.html</id>
     <published>2015-10-23T00:00:00Z</published>
     <updated>2015-10-23T00:00:00Z</updated>
     <summary type="html"><![CDATA[How I finally decided what is better (for me), Lisp or Haskell?]]></summary>
