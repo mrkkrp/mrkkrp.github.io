@@ -15,7 +15,7 @@ feedConfig = FeedConfiguration
   , feedDescription = "Random programming stuff, mainly Haskell and Emacs"
   , feedAuthorName  = "Mark Karpov"
   , feedAuthorEmail = "markkarpov@opmbx.org"
-  , feedRoot        = "https://mrkkrp.github.com"
+  , feedRoot        = "https://mrkkrp.github.io"
   }
 
 pandocCompiler' :: Compiler (Item String)
